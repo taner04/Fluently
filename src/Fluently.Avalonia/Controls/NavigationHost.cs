@@ -6,7 +6,7 @@ namespace Fluently;
 
 /// <summary>
 /// Shows the current page of an <see cref="INavigationService"/> and follows its navigation.
-/// Pages are turned into views by the view locator registered with <c>UseFluently</c>;
+/// Pages are turned into views by the <see cref="ViewLocator"/> in your application's data templates;
 /// set <see cref="TransitioningContentControl.PageTransition"/> to animate page changes.
 /// </summary>
 public class NavigationHost : TransitioningContentControl

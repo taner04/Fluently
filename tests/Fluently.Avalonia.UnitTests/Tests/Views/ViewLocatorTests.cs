@@ -1,15 +1,15 @@
 using Fluently.Avalonia.UnitTests.Infrastructure;
-using Fluently.Avalonia.UnitTests.TestDoubles;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Fluently.Avalonia.UnitTests.Tests.Views;
 
-public sealed class ViewLocatorTests : IDisposable
+public sealed class ViewLocatorTests : TestBase, IDisposable
 {
+    private readonly INavigationService _navigation;
     private readonly ServiceProvider _serviceProvider = Services.Create();
-    private readonly ViewLocator _viewLocator;
+    private readonly ViewLocator _viewLocator = new();
 
-    public ViewLocatorTests() => _viewLocator = _serviceProvider.GetRequiredService<ViewLocator>();
+    public ViewLocatorTests() => _navigation = _serviceProvider.GetRequiredService<INavigationService>();
 
     public void Dispose() => _serviceProvider.Dispose();
 
@@ -52,12 +52,25 @@ public sealed class ViewLocatorTests : IDisposable
         });
 
     [Fact]
-    public void Add_Should_Throw_When_ViewModelAlreadyHasView()
-    {
-        var add = () => new ServiceCollection().AddFluentlyAvalonia(views => views
-            .Add<HomeView, HomeViewModel>()
-            .Add<HomeView, HomeViewModel>());
+    public Task Build_Should_ResolveViewServicesFromPageScope_When_PageWasNavigatedTo() =>
+        UiThread.RunAsync(async () =>
+        {
+            await _navigation.NavigateToAsync<GreetingViewModel>(CurrentCancellationToken);
+            var page = (GreetingViewModel)_navigation.CurrentPage!;
 
-        add.Should().Throw<InvalidOperationException>();
-    }
+            var view = _viewLocator.Build(page);
+
+            view.Should().BeOfType<GreetingView>().Which.Greeting.Should().BeSameAs(page.Greeting);
+        });
+
+    [Fact]
+    public Task Build_Should_ResolveViewServicesFromRoot_When_FluentlyDidNotCreateViewModel() =>
+        UiThread.RunAsync(() =>
+        {
+            var view = _viewLocator.Build(new ClockViewModel());
+
+            view.Should().BeOfType<ClockView>()
+                .Which.Clock.Should().BeSameAs(_serviceProvider.GetRequiredService<Clock>());
+            return Task.CompletedTask;
+        });
 }

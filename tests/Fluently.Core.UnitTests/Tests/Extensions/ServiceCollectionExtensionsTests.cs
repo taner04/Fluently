@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Fluently.Core.UnitTests.Infrastructure;
-using Fluently.Core.UnitTests.TestDoubles;
 
 namespace Fluently.Core.UnitTests.Tests.Extensions;
 

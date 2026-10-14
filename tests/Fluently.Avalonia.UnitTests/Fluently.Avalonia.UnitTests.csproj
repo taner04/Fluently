@@ -7,9 +7,15 @@
 
     <ItemGroup>
         <ProjectReference Include="../../src/Fluently.Avalonia/Fluently.Avalonia.csproj"/>
-        <ProjectReference Include="../../src/Fluently.Avalonia.SourceGenerator/Fluently.Avalonia.SourceGenerator.csproj"
+        <ProjectReference Include="../../src/Fluently.SourceGenerator/Fluently.SourceGenerator.csproj"
                           OutputItemType="Analyzer"
                           ReferenceOutputAssembly="false"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Fluently.Avalonia.UnitTests.TestDoubles.Services"/>
+        <Using Include="Fluently.Avalonia.UnitTests.TestDoubles.ViewModels"/>
+        <Using Include="Fluently.Avalonia.UnitTests.TestDoubles.Views"/>
     </ItemGroup>
 
 </Project>

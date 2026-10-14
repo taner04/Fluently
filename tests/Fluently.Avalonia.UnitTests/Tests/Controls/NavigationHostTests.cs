@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using Fluently.Avalonia.UnitTests.Infrastructure;
-using Fluently.Avalonia.UnitTests.TestDoubles;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Fluently.Avalonia.UnitTests.Tests.Controls;

@@ -8,4 +8,10 @@
         <ProjectReference Include="../../src/Fluently.Core/Fluently.Core.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Using Include="Fluently.Core.UnitTests.TestDoubles.Pages"/>
+        <Using Include="Fluently.Core.UnitTests.TestDoubles.Services"/>
+        <Using Include="Fluently.Core.UnitTests.TestDoubles.Views"/>
+    </ItemGroup>
+
 </Project>

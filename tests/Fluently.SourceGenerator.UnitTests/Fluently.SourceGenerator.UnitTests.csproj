@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks></TargetFrameworks>
+        <TargetFramework>net10.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../../src/Fluently.Avalonia/Fluently.Avalonia.csproj"/>
+        <ProjectReference Include="../../src/Fluently.SourceGenerator/Fluently.SourceGenerator.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Fluently.SourceGenerator.Generators.Views"/>
+        <Using Include="Microsoft.CodeAnalysis"/>
+        <Using Include="Microsoft.CodeAnalysis.CSharp"/>
+    </ItemGroup>
+
+</Project>

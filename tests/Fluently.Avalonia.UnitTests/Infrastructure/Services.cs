@@ -1,4 +1,3 @@
-using Fluently.Avalonia.UnitTests.TestDoubles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -12,8 +11,10 @@ internal static class Services
             .AddSingleton<ILoggerFactory>(NullLoggerFactory.Instance)
             .AddSingleton(typeof(ILogger<>), typeof(Logger<>))
             .AddFluently()
-            .AddFluentlyViews()
             .AddSingleton<HomeViewModel>()
             .AddSingleton<DetailsViewModel>()
+            .AddScoped<Greeting>()
+            .AddTransient<GreetingViewModel>()
+            .AddSingleton<Clock>()
             .BuildServiceProvider();
 }

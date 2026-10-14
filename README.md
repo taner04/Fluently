@@ -1,11 +1,16 @@
 # Fluently
 
+[![CI](https://github.com/taner04/Fluently/actions/workflows/ci.yml/badge.svg)](https://github.com/taner04/Fluently/actions/workflows/ci.yml)
+[![Fluently.Core](https://img.shields.io/nuget/v/Fluently.Core?label=Fluently.Core)](https://www.nuget.org/packages/Fluently.Core)
+[![Fluently.Avalonia](https://img.shields.io/nuget/v/Fluently.Avalonia?label=Fluently.Avalonia)](https://www.nuget.org/packages/Fluently.Avalonia)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 A view-model-first toolkit for .NET desktop apps.
 
 | Package | Description |
 |---|---|
-| `Fluently.Core` | Async navigation with back and forward history, guards, typed parameters and rollback when a navigation fails. No UI dependency, so it works with Avalonia, WPF or any other MVVM setup. |
-| `Fluently.Avalonia` | Avalonia integration: a source-generated view locator that maps view models to views, and a `NavigationHost` control that shows the current page. |
+| `Fluently.Core` | Async navigation with back and forward history, guards, typed parameters and rollback when a navigation fails, plus source-generated view registration. No UI dependency, so view model projects only need this package. |
+| `Fluently.Avalonia` | Avalonia integration: a `ViewLocator` you add in XAML and a `NavigationHost` control that shows the current page. |
 
 ## Features
 
@@ -13,12 +18,17 @@ A view-model-first toolkit for .NET desktop apps.
 - **Opt-in async lifecycle** — implement `INavigatedTo` or `INavigatedFrom` only where a page needs them
 - **Typed parameters** — `INavigatedTo<TParameter>` and `NavigateToAsync<TPage, TParameter>` check the parameter type at compile time
 - **Navigation guards** — `ICanNavigateFrom` lets a page block leaving it, for example with unsaved changes
-- **History** — `GoBackAsync` and `GoForwardAsync` with `CanGoBack` and `CanGoForward`; navigating to a new page clears the forward history
+- **History** — `GoBackAsync` and `GoForwardAsync`, bindable `CanGoBack` and `CanGoForward`, and `ClearHistoryAsync` after signing in or out; navigating to a new page clears the forward history
 - **Rollback** — if entering a page throws, Fluently leaves it again and restores the previous page
 - **Cancellation** — every navigation takes a `CancellationToken`; a canceled navigation also restores the previous page
 - **Serialized** — overlapping navigations run one after another
-- **Scoped pages** — every history entry gets its own service scope, which is disposed when the entry leaves the history
+- **Scoped pages** — every history entry gets its own service scope, which is disposed, asynchronously where needed, when the entry leaves the history
 - **Nested navigation** — `INavigationServiceFactory` creates independent services with their own history
+
+## Requirements
+
+- .NET 8 or later (the packages target `net8.0` and `net10.0`)
+- `Fluently.Avalonia`: Avalonia 12.1 or later
 
 ## Getting Started
 
@@ -42,8 +52,8 @@ Mark your pages. A page implements `INavigableViewModel`, or one or both lifecyc
 | Interface | Use it when the page |
 |---|---|
 | `INavigableViewModel` | only needs to be navigable |
-| `INavigatedTo` | loads data when it is shown |
-| `INavigatedTo<TParameter>` | needs a parameter of a specific type when it is shown |
+| `INavigatedTo` | loads data when it is shown without a parameter |
+| `INavigatedTo<TParameter>` | is shown with a parameter of type `TParameter`; a page can implement it for several types |
 | `INavigatedFrom` | saves state or stops work when it is left |
 | `ICanNavigateFrom` | may refuse to be left, for example with unsaved changes |
 
@@ -58,7 +68,7 @@ public sealed class ChatViewModel : INavigatedTo<ChatId>
 
 public sealed class EditorViewModel : INavigatedTo, INavigatedFrom, ICanNavigateFrom
 {
-    public Task OnNavigatedToAsync(object? parameter, CancellationToken cancellationToken) => LoadDraftAsync(cancellationToken);
+    public Task OnNavigatedToAsync(CancellationToken cancellationToken) => LoadDraftAsync(cancellationToken);
 
     public Task OnNavigatedFromAsync(CancellationToken cancellationToken) => SaveDraftAsync(cancellationToken);
 
@@ -72,23 +82,24 @@ Navigate:
 ```csharp
 await navigationService.NavigateToAsync<ChatViewModel, ChatId>(chatId);
 await navigationService.NavigateToAsync<AboutViewModel>();
+await navigationService.NavigateToAsync(menuItem.ViewModelType); // when the type is only known at run time
 await navigationService.GoBackAsync();
 ```
 
-Bind your content area to `CurrentPage` and update it from the `Navigated` event. In Avalonia, a `ViewLocator` turns the view model into its view.
+`CurrentPage`, `CanGoBack` and `CanGoForward` raise `PropertyChanged`, so you can bind to them directly. In Avalonia, the `NavigationHost` shows `CurrentPage` as its view (see [Avalonia](#avalonia)).
 
-`CanGoBack` and `CanGoForward` only change with a navigation, so re-evaluate your back and forward commands in the `Navigated` handler:
-
-```csharp
-navigationService.Navigated += (_, _) => GoBackCommand.NotifyCanExecuteChanged();
-
-[RelayCommand(CanExecute = nameof(CanGoBack))]
-private Task GoBackAsync() => navigationService.GoBackAsync();
-
-private bool CanGoBack() => navigationService.CanGoBack;
+```xml
+<Button Content="Back" Command="{Binding GoBackCommand}" IsEnabled="{Binding Navigation.CanGoBack}" />
 ```
 
-A service from `INavigationServiceFactory` belongs to you: dispose it when its navigation is no longer needed.
+After signing in or out, clear the history so going back cannot return to the previous session:
+
+```csharp
+await navigationService.NavigateToAsync<LoginViewModel>();
+await navigationService.ClearHistoryAsync();
+```
+
+A service from `INavigationServiceFactory` belongs to you: dispose it when its navigation is no longer needed, preferably with `DisposeAsync`, which also disposes services that can only be disposed asynchronously.
 
 ## Avalonia
 
@@ -96,12 +107,12 @@ A service from `INavigationServiceFactory` belongs to you: dispose it when its n
 dotnet add package Fluently.Avalonia
 ```
 
-Mark each view with `IViewFor<TViewModel>`. The view gets its view model in the constructor:
+Mark each view with `IViewFor<TViewModel>`. The first constructor parameter is the view model; any further parameters are services:
 
 ```csharp
 internal partial class ChatView : UserControl, IViewFor<ChatViewModel>
 {
-    public ChatView(ChatViewModel viewModel)
+    public ChatView(ChatViewModel viewModel, IAudioPlayer audio)
     {
         ViewModel = viewModel;
         DataContext = viewModel;
@@ -112,22 +123,16 @@ internal partial class ChatView : UserControl, IViewFor<ChatViewModel>
 }
 ```
 
-Register your views with the generated `AddFluentlyViews()` and activate the view locator:
+Add the view locator to your application's data templates. That is all the setup there is:
 
-```csharp
-var services = new ServiceCollection()
-    .AddLogging()
-    .AddFluently()
-    .AddFluentlyViews()
-    .AddTransient<ChatViewModel>()
-    .BuildServiceProvider();
-
-this.UseFluently(services); // in App.OnFrameworkInitializationCompleted
+```xml
+<!-- App.axaml -->
+<Application xmlns:fluently="https://github.com/taner04/fluently">
+    <Application.DataTemplates>
+        <fluently:ViewLocator />
+    </Application.DataTemplates>
+</Application>
 ```
-
-`AddFluentlyViews()` is generated at compile time by a source generator that ships with the package. It registers every non-abstract view in your project that implements `IViewFor<TViewModel>`, without reflection, so it works with trimming and Native AOT. The compiler reports an error when a view is not an Avalonia `Control` (`FLUENTLY001`), is private (`FLUENTLY002`), or when a view model has two views (`FLUENTLY003`).
-
-To register views by hand instead, for example from another assembly, use `AddFluentlyAvalonia(views => views.Add<ChatView, ChatViewModel>())`.
 
 Show the current page with a `NavigationHost`:
 
@@ -141,7 +146,16 @@ Show the current page with a `NavigationHost`:
 </Window>
 ```
 
-The view locator creates one view per view model instance and reuses it, so a singleton page keeps its view, including scroll position and input, when you navigate back to it. Views are created through the service provider, so they can take services as constructor arguments too.
+### How views are found and created
+
+- A source generator that ships with `Fluently.Core` registers every non-abstract `IViewFor<TViewModel>` view of your project when the assembly loads, so there is no registration code. It writes the constructor call itself, without reflection, so it works with trimming and Native AOT.
+- If a view has several constructors, the one with the view model as its first parameter and the most parameters is used. Further parameters come from the services; nullable ones are optional.
+- The services of a page's view come from the same scope as the page itself, so a view and its page share scoped services, and both are disposed when the page leaves the history.
+- Views of view models that Fluently did not create, for example items you create yourself, get their services from the application's root provider. That provider is known once the container has created the `INavigationService`.
+- The view locator creates one view per view model instance and reuses it, so a singleton page keeps its view, including scroll position and input, when you navigate back to it.
+- To register a view the generator cannot see, for example from another assembly, call `ViewRegistry.Add<ChatViewModel>((services, viewModel) => new ChatView(viewModel))`.
+
+The compiler reports an error when a view does not derive from the UI element type of the UI framework you use, for example Avalonia's `Control` (`FLUENTLY001`), when a view is private (`FLUENTLY002`), when a view model has two views (`FLUENTLY003`), or when a view has no constructor whose first parameter is its view model (`FLUENTLY004`).
 
 `samples/Fluently.Samples` is a small runnable app that shows all of this.
 
@@ -153,8 +167,20 @@ The view locator creates one view per view model instance and reuses it, so a si
 | Navigate to the current page with a different parameter | Re-enters the page and replaces the current history entry |
 | `CanNavigateFromAsync` returns `false` or throws | Returns `false`, the current page stays and nothing else is called |
 | `OnNavigatedToAsync` throws | Returns `false`, the failed page is left and the previous page is entered again |
-| A typed page gets no parameter or one of the wrong type | Handled like `OnNavigatedToAsync` throwing |
+| A page that only implements `INavigatedTo<TParameter>` is navigated to without a parameter | Returns `false` and logs that the page needs a parameter |
 | Navigation is canceled | The previous page is entered again, `OperationCanceledException` is thrown |
+| Several navigations at once | They run one after another; one canceled while waiting throws without touching any page |
+| `ClearHistoryAsync` | Previous and next pages are released without guards or `OnNavigatedFromAsync`; the current page stays |
+
+## Building from source
+
+```bash
+dotnet build Fluently.slnx
+dotnet test --solution Fluently.slnx
+dotnet run --project samples/Fluently.Samples
+```
+
+The tests run on .NET 8 and .NET 10, so both SDKs or runtimes need to be installed. Releases are published to NuGet from GitHub Actions when a `v*` tag is pushed; the version comes from the tag.
 
 ## License
 

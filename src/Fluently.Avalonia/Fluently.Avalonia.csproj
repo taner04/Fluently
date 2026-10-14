@@ -3,7 +3,7 @@
     <PropertyGroup>
         <PackageId>Fluently.Avalonia</PackageId>
         <RootNamespace>Fluently</RootNamespace>
-        <Description>Avalonia integration for Fluently: view-model-first view location and a navigation host.</Description>
+        <Description>Avalonia integration for Fluently: shows the views registered with AddFluentlyViews() and the current page in a NavigationHost.</Description>
         <PackageTags>mvvm;navigation;avalonia</PackageTags>
     </PropertyGroup>
 
@@ -12,17 +12,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Fluently.Core\Fluently.Core.csproj"/>
-        <ProjectReference Include="..\Fluently.Avalonia.SourceGenerator\Fluently.Avalonia.SourceGenerator.csproj"
-                          ReferenceOutputAssembly="false"
-                          PrivateAssets="all"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Include="$(ArtifactsPath)/bin/Fluently.Avalonia.SourceGenerator/$(Configuration.ToLowerInvariant())/Fluently.Avalonia.SourceGenerator.dll"
-              Pack="true"
-              PackagePath="analyzers/dotnet/cs"
-              Visible="false"/>
+        <!-- PrivateAssets="none" passes the view generator in Fluently.Core on to apps that only reference Fluently.Avalonia. -->
+        <ProjectReference Include="..\Fluently.Core\Fluently.Core.csproj" PrivateAssets="none"/>
     </ItemGroup>
 
     <ItemGroup>
