@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-14
+
+First release of `Fluently.Avalonia`.
+
 ### Breaking changes
 
 - `INavigatedTo.OnNavigatedToAsync` no longer has a parameter. Pages that need one implement `INavigatedTo<TParameter>`
@@ -44,5 +48,6 @@ First release of `Fluently.Core`.
 - `AddFluently()` to register the services
 - Generic `NavigateToAsync<T>()` overloads
 
-[Unreleased]: https://github.com/taner04/Fluently/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/taner04/Fluently/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/taner04/Fluently/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/taner04/Fluently/releases/tag/v0.1.0
