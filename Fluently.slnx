@@ -1,0 +1,8 @@
+<Solution>
+    <Folder Name="/src/">
+        <Project Path="src/Fluently.Core/Fluently.Core.csproj"/>
+    </Folder>
+    <Folder Name="/tests/">
+        <Project Path="tests/Fluently.Core.UnitTests/Fluently.Core.UnitTests.csproj"/>
+    </Folder>
+</Solution>
