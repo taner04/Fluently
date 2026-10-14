@@ -5,6 +5,7 @@ A view-model-first toolkit for .NET desktop apps.
 | Package | Description |
 |---|---|
 | `Fluently.Core` | Async navigation with back and forward history, guards, typed parameters and rollback when a navigation fails. No UI dependency, so it works with Avalonia, WPF or any other MVVM setup. |
+| `Fluently.Avalonia` | Avalonia integration: a view locator that maps view models to views, and a `NavigationHost` control that shows the current page. |
 
 ## Features
 
@@ -88,6 +89,57 @@ private bool CanGoBack() => navigationService.CanGoBack;
 ```
 
 A service from `INavigationServiceFactory` belongs to you: dispose it when its navigation is no longer needed.
+
+## Avalonia
+
+```bash
+dotnet add package Fluently.Avalonia
+```
+
+Mark each view with `IViewFor<TViewModel>`. The view gets its view model in the constructor:
+
+```csharp
+internal partial class ChatView : UserControl, IViewFor<ChatViewModel>
+{
+    public ChatView(ChatViewModel viewModel)
+    {
+        ViewModel = viewModel;
+        DataContext = viewModel;
+        InitializeComponent();
+    }
+
+    public ChatViewModel ViewModel { get; }
+}
+```
+
+Register the assemblies that contain your views and activate the view locator:
+
+```csharp
+var services = new ServiceCollection()
+    .AddLogging()
+    .AddFluently()
+    .AddFluentlyAvalonia(typeof(App).Assembly)
+    .AddTransient<ChatViewModel>()
+    .BuildServiceProvider();
+
+this.UseFluently(services); // in App.OnFrameworkInitializationCompleted
+```
+
+Show the current page with a `NavigationHost`:
+
+```xml
+<Window xmlns:fluently="https://github.com/taner04/fluently">
+    <fluently:NavigationHost Navigation="{Binding Navigation}">
+        <fluently:NavigationHost.PageTransition>
+            <CrossFade Duration="0:0:0.15" />
+        </fluently:NavigationHost.PageTransition>
+    </fluently:NavigationHost>
+</Window>
+```
+
+The view locator creates one view per view model instance and reuses it, so a singleton page keeps its view, including scroll position and input, when you navigate back to it. Views are created through the service provider, so they can take services as constructor arguments too.
+
+`samples/Fluently.Samples` is a small runnable app that shows all of this.
 
 ## Behavior
 

@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>Fluently.Avalonia</PackageId>
+        <RootNamespace>Fluently</RootNamespace>
+        <Description>Avalonia integration for Fluently: view-model-first view location and a navigation host.</Description>
+        <PackageTags>mvvm;navigation;avalonia</PackageTags>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Fluently.Core\Fluently.Core.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Fluently.Avalonia.UnitTests"/>
+    </ItemGroup>
+
+</Project>

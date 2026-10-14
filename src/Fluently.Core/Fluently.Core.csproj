@@ -5,6 +5,7 @@
         <RootNamespace>Fluently</RootNamespace>
         <Description>Async, view-model-first navigation with back and forward history and rollback on failed navigation.</Description>
         <PackageTags>mvvm;navigation;avalonia</PackageTags>
+        <PackageValidationBaselineVersion>0.1.0</PackageValidationBaselineVersion>
     </PropertyGroup>
 
     <ItemGroup>
