@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-14
+
+### Fixed
+
+- A navigation canceled while waiting for another navigation could still run when the cancellation and the end of the other navigation happened at almost the same time
+- `Fluently.Core` ships its symbol package again; it was missing from 0.2.0
+
 ## [0.2.0] - 2026-10-14
 
 First release of `Fluently.Avalonia`.
@@ -48,6 +55,7 @@ First release of `Fluently.Core`.
 - `AddFluently()` to register the services
 - Generic `NavigateToAsync<T>()` overloads
 
-[Unreleased]: https://github.com/taner04/Fluently/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/taner04/Fluently/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/taner04/Fluently/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/taner04/Fluently/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/taner04/Fluently/releases/tag/v0.1.0

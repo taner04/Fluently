@@ -70,7 +70,7 @@ internal sealed partial class NavigationService : INavigationService
     public async Task ClearHistoryAsync(CancellationToken cancellationToken = default)
     {
         HistoryState before;
-        await _transitionLock.WaitAsync(cancellationToken);
+        await EnterTransitionAsync(cancellationToken);
         try
         {
             ObjectDisposedException.ThrowIf(_disposed, this);

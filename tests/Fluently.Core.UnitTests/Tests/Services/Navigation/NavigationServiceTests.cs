@@ -431,6 +431,40 @@ public sealed class NavigationServiceTests : TestBase, IDisposable
     }
 
     [Fact]
+    public async Task NavigateToAsync_Should_NeverEnterPage_When_CanceledJustBeforeLockIsReleased()
+    {
+        // SemaphoreSlim can grant a waiter whose cancellation races with the release, so repeat the race.
+        var enteredAnyway = 0;
+        for (var attempt = 0; attempt < 1000; attempt++)
+        {
+            var first = new FirstPage();
+            var second = new SecondPage();
+            using var serviceProvider = new ServiceCollection()
+                .AddSingleton(first)
+                .AddSingleton(second)
+                .BuildServiceProvider();
+            using var navigationService = new NavigationService(serviceProvider, NullLogger<NavigationService>.Instance);
+            using var cancellation = new CancellationTokenSource();
+            var gate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            first.Entering = _ => gate.Task;
+            var firstNavigation = navigationService.NavigateToAsync<FirstPage>(CurrentCancellationToken);
+            var secondNavigation = navigationService.NavigateToAsync<SecondPage>(cancellation.Token);
+
+            await cancellation.CancelAsync();
+            gate.SetResult();
+
+            await firstNavigation;
+            await secondNavigation.Invoking(static task => task).Should().ThrowAsync<OperationCanceledException>();
+            if (second.Calls.Count > 0)
+            {
+                enteredAnyway++;
+            }
+        }
+
+        enteredAnyway.Should().Be(0);
+    }
+
+    [Fact]
     public async Task ClearHistoryAsync_Should_RemoveOtherPagesAndKeepCurrent()
     {
         await _navigationService.NavigateToAsync<FirstPage>(CurrentCancellationToken);

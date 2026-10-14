@@ -9,7 +9,7 @@ internal sealed partial class NavigationService
     {
         NavigationEntry target;
         HistoryState before;
-        await _transitionLock.WaitAsync(cancellationToken);
+        await EnterTransitionAsync(cancellationToken);
         try
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
@@ -78,7 +78,7 @@ internal sealed partial class NavigationService
     {
         NavigationEntry? target;
         HistoryState before;
-        await _transitionLock.WaitAsync(cancellationToken);
+        await EnterTransitionAsync(cancellationToken);
         try
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
@@ -116,6 +116,18 @@ internal sealed partial class NavigationService
         RaisePropertyChanges(before);
         Navigated?.Invoke(this, new NavigatedEventArgs(target.Page));
         return true;
+    }
+
+    // SemaphoreSlim can still grant a waiter whose token was canceled just before the lock was released,
+    // so a navigation canceled while waiting gives the lock back and never touches a page.
+    private async Task EnterTransitionAsync(CancellationToken cancellationToken)
+    {
+        await _transitionLock.WaitAsync(cancellationToken);
+        if (cancellationToken.IsCancellationRequested)
+        {
+            _transitionLock.Release();
+            cancellationToken.ThrowIfCancellationRequested();
+        }
     }
 
     private async Task<bool> CanLeaveAsync(NavigationEntry current, CancellationToken cancellationToken)
