@@ -45,7 +45,7 @@ services.AddTransient<HomeViewModel>();
 services.AddSingleton<SettingsViewModel>();
 ```
 
-Every history entry resolves its page from its own service scope. Transient pages are created on every navigation and disposed, together with their scoped and transient dependencies, when the entry leaves the history (forward history cleared, page replaced, navigation failed or the service disposed). Singleton pages keep their state and are never disposed by Fluently.
+Every history entry resolves its page from its own service scope. Transient pages are created on every navigation and disposed, together with their scoped and transient dependencies, when the entry leaves the history (forward history cleared, history cleared with `ClearHistoryAsync`, page replaced, navigation failed or the service disposed). Singleton pages keep their state and are never disposed by Fluently.
 
 Mark your pages. A page implements `INavigableViewModel`, or one or both lifecycle interfaces when it needs to react to navigation:
 
@@ -53,7 +53,7 @@ Mark your pages. A page implements `INavigableViewModel`, or one or both lifecyc
 |---|---|
 | `INavigableViewModel` | only needs to be navigable |
 | `INavigatedTo` | loads data when it is shown without a parameter |
-| `INavigatedTo<TParameter>` | is shown with a parameter of type `TParameter`; a page can implement it for several types |
+| `INavigatedTo<TParameter>` | is shown with a parameter of type `TParameter`; a page can implement it for several types, and together with `INavigatedTo` when it can also be shown without one |
 | `INavigatedFrom` | saves state or stops work when it is left |
 | `ICanNavigateFrom` | may refuse to be left, for example with unsaved changes |
 
@@ -86,7 +86,7 @@ await navigationService.NavigateToAsync(menuItem.ViewModelType); // when the typ
 await navigationService.GoBackAsync();
 ```
 
-`CurrentPage`, `CanGoBack` and `CanGoForward` raise `PropertyChanged`, so you can bind to them directly. In Avalonia, the `NavigationHost` shows `CurrentPage` as its view (see [Avalonia](#avalonia)).
+`CurrentPage`, `CanGoBack` and `CanGoForward` raise `PropertyChanged`, so you can bind to them directly. After every completed navigation, `Navigated` is raised with the new page. In Avalonia, the `NavigationHost` shows `CurrentPage` as its view (see [Avalonia](#avalonia)).
 
 ```xml
 <Button Content="Back" Command="{Binding GoBackCommand}" IsEnabled="{Binding Navigation.CanGoBack}" />
@@ -106,6 +106,8 @@ A service from `INavigationServiceFactory` belongs to you: dispose it when its n
 ```bash
 dotnet add package Fluently.Avalonia
 ```
+
+`Fluently.Avalonia` brings `Fluently.Core` and its view generator with it, so an Avalonia app only needs this package.
 
 Mark each view with `IViewFor<TViewModel>`. The first constructor parameter is the view model; any further parameters are services:
 
@@ -163,11 +165,13 @@ The compiler reports an error when a view does not derive from the UI element ty
 
 | Call | Result |
 |---|---|
-| Navigate to the current page without a parameter, or with the same parameter | Returns `false`, nothing happens |
+| Navigate to the current page without a parameter, or with an equal parameter (compared with `Equals`) | Returns `false`, nothing happens |
 | Navigate to the current page with a different parameter | Re-enters the page and replaces the current history entry |
 | `CanNavigateFromAsync` returns `false` or throws | Returns `false`, the current page stays and nothing else is called |
 | `OnNavigatedToAsync` throws | Returns `false`, the failed page is left and the previous page is entered again |
 | A page that only implements `INavigatedTo<TParameter>` is navigated to without a parameter | Returns `false` and logs that the page needs a parameter |
+| `NavigateToAsync(Type)` with a type that does not implement `INavigableViewModel` | Throws `ArgumentException` |
+| `GoBackAsync` or `GoForwardAsync` without a previous or next page | Returns `false` |
 | Navigation is canceled | The previous page is entered again, `OperationCanceledException` is thrown |
 | Several navigations at once | They run one after another; one canceled while waiting throws without touching any page |
 | `ClearHistoryAsync` | Previous and next pages are released without guards or `OnNavigatedFromAsync`; the current page stays |
