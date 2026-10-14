@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-10-14
+
+### Fixed
+
+- The `Fluently.Avalonia` package description no longer mentions `AddFluentlyViews()`, which does not exist
+- The package README describes `Navigated`, `ClearHistoryAsync` disposal and more navigation results
+
 ## [0.2.1] - 2026-10-14
 
 ### Fixed
@@ -55,7 +62,8 @@ First release of `Fluently.Core`.
 - `AddFluently()` to register the services
 - Generic `NavigateToAsync<T>()` overloads
 
-[Unreleased]: https://github.com/taner04/Fluently/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/taner04/Fluently/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/taner04/Fluently/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/taner04/Fluently/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/taner04/Fluently/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/taner04/Fluently/releases/tag/v0.1.0
