@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-14
+
+First release of `Fluently.Core`.
+
 ### Added
 
 - `INavigationService` with async, view-model-first navigation, back and forward history, rollback on failed navigation and cancellation
@@ -16,3 +20,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `ICanNavigateFrom` navigation guard
 - `AddFluently()` to register the services
 - Generic `NavigateToAsync<T>()` overloads
+
+[Unreleased]: https://github.com/taner04/Fluently/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/taner04/Fluently/releases/tag/v0.1.0
