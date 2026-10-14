@@ -12,7 +12,7 @@ internal static class Services
             .AddSingleton<ILoggerFactory>(NullLoggerFactory.Instance)
             .AddSingleton(typeof(ILogger<>), typeof(Logger<>))
             .AddFluently()
-            .AddFluentlyAvalonia(typeof(Services).Assembly)
+            .AddFluentlyViews()
             .AddSingleton<HomeViewModel>()
             .AddSingleton<DetailsViewModel>()
             .BuildServiceProvider();

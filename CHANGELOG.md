@@ -7,7 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- `Fluently.Avalonia` package with `IViewFor<TViewModel>`, a view locator, `NavigationHost`, `AddFluentlyAvalonia()` and `UseFluently()`
+- `Fluently.Avalonia` package with `IViewFor<TViewModel>`, a view locator, `NavigationHost` and `UseFluently()`
+- Source generator that creates `AddFluentlyViews()`, registering every `IViewFor<TViewModel>` view without reflection, with the diagnostics `FLUENTLY001` to `FLUENTLY003`
+- `AddFluentlyAvalonia(views => ...)` and `ViewRegistry.Add<TView, TViewModel>()` to register views by hand
 - Sample app in `samples/Fluently.Samples`
 
 ## [0.1.0] - 2026-10-14

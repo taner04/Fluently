@@ -52,10 +52,12 @@ public sealed class ViewLocatorTests : IDisposable
         });
 
     [Fact]
-    public void AddFluentlyAvalonia_Should_Throw_When_NoAssemblyIsPassed()
+    public void Add_Should_Throw_When_ViewModelAlreadyHasView()
     {
-        var add = () => new ServiceCollection().AddFluentlyAvalonia();
+        var add = () => new ServiceCollection().AddFluentlyAvalonia(views => views
+            .Add<HomeView, HomeViewModel>()
+            .Add<HomeView, HomeViewModel>());
 
-        add.Should().Throw<ArgumentException>();
+        add.Should().Throw<InvalidOperationException>();
     }
 }

@@ -1,32 +1,54 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
+using Avalonia.Controls;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Fluently;
 
-internal sealed class ViewRegistry
+/// <summary>
+/// The views the view locator can create. The generated <c>AddFluentlyViews()</c> fills it with every
+/// <see cref="IViewFor{TViewModel}"/> view of your assembly; use <c>AddFluentlyAvalonia</c> to fill it by hand.
+/// </summary>
+public sealed class ViewRegistry
 {
-    private readonly Dictionary<Type, Type> _viewTypes = [];
+    private readonly Dictionary<Type, Func<IServiceProvider, object, Control>> _factories = [];
 
-    public ViewRegistry(IEnumerable<Assembly> assemblies)
+    internal ViewRegistry()
     {
-        var views = assemblies
-            .SelectMany(assembly => assembly.GetTypes())
-            .Where(type => type is { IsClass: true, IsAbstract: false })
-            .SelectMany(viewType => viewType.GetInterfaces()
-                .Where(contract => contract.IsGenericType &&
-                                   contract.GetGenericTypeDefinition() == typeof(IViewFor<>))
-                .Select(contract => (ViewModelType: contract.GenericTypeArguments[0], ViewType: viewType)));
-
-        foreach (var (viewModelType, viewType) in views)
-        {
-            if (!_viewTypes.TryAdd(viewModelType, viewType))
-            {
-                throw new InvalidOperationException(
-                    $"{viewModelType.Name} has more than one view: {_viewTypes[viewModelType].Name} and {viewType.Name}.");
-            }
-        }
     }
 
-    public bool TryGetViewType(Type viewModelType, [NotNullWhen(true)] out Type? viewType) =>
-        _viewTypes.TryGetValue(viewModelType, out viewType);
+    /// <summary>
+    /// Registers <typeparamref name="TView"/> as the view of <typeparamref name="TViewModel"/>.
+    /// The view is created through the service provider with the view model as a constructor argument.
+    /// </summary>
+    /// <exception cref="InvalidOperationException"><typeparamref name="TViewModel"/> already has a view.</exception>
+    public ViewRegistry Add<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TView, TViewModel>()
+        where TView : Control, IViewFor<TViewModel>
+        where TViewModel : class
+    {
+        if (!_factories.TryAdd(
+                typeof(TViewModel),
+                static (serviceProvider, viewModel) => ActivatorUtilities.CreateInstance<TView>(serviceProvider, viewModel)))
+        {
+            throw new InvalidOperationException($"{typeof(TViewModel).Name} already has a view.");
+        }
+
+        return this;
+    }
+
+    internal bool Contains(Type viewModelType) => _factories.ContainsKey(viewModelType);
+
+    internal bool TryCreate(
+        IServiceProvider serviceProvider,
+        object viewModel,
+        [NotNullWhen(true)] out Control? view)
+    {
+        if (_factories.TryGetValue(viewModel.GetType(), out var factory))
+        {
+            view = factory(serviceProvider, viewModel);
+            return true;
+        }
+
+        view = null;
+        return false;
+    }
 }

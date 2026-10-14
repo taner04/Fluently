@@ -18,7 +18,7 @@ public class App : Application
             var services = new ServiceCollection()
                 .AddLogging()
                 .AddFluently()
-                .AddFluentlyAvalonia(typeof(App).Assembly)
+                .AddFluentlyViews()
                 .AddSingleton<MainWindowViewModel>()
                 .AddSingleton<HomeViewModel>()
                 .AddTransient<DetailsViewModel>()

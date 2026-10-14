@@ -1,4 +1,3 @@
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -12,18 +11,18 @@ public static class AvaloniaServiceCollectionExtensions
     extension(IServiceCollection services)
     {
         /// <summary>
-        /// Registers the view locator. Every view in <paramref name="viewAssemblies"/> that implements
-        /// <see cref="IViewFor{TViewModel}"/> becomes the view of its view model.
-        /// Call <c>UseFluently</c> on the application afterwards to activate it.
+        /// Registers the view locator with the views added in <paramref name="configureViews"/>.
+        /// Usually you call the generated <c>AddFluentlyViews()</c> instead, which registers every
+        /// <see cref="IViewFor{TViewModel}"/> view of your assembly for you.
+        /// Call <c>UseFluently</c> on the application afterwards to activate the view locator.
         /// </summary>
-        public IServiceCollection AddFluentlyAvalonia(params Assembly[] viewAssemblies)
+        public IServiceCollection AddFluentlyAvalonia(Action<ViewRegistry> configureViews)
         {
-            if (viewAssemblies.Length == 0)
-            {
-                throw new ArgumentException("Pass at least one assembly that contains views.", nameof(viewAssemblies));
-            }
+            ArgumentNullException.ThrowIfNull(configureViews);
 
-            services.TryAddSingleton(new ViewRegistry(viewAssemblies));
+            var viewRegistry = new ViewRegistry();
+            configureViews(viewRegistry);
+            services.TryAddSingleton(viewRegistry);
             services.TryAddSingleton<ViewLocator>();
             return services;
         }

@@ -5,7 +5,7 @@ A view-model-first toolkit for .NET desktop apps.
 | Package | Description |
 |---|---|
 | `Fluently.Core` | Async navigation with back and forward history, guards, typed parameters and rollback when a navigation fails. No UI dependency, so it works with Avalonia, WPF or any other MVVM setup. |
-| `Fluently.Avalonia` | Avalonia integration: a view locator that maps view models to views, and a `NavigationHost` control that shows the current page. |
+| `Fluently.Avalonia` | Avalonia integration: a source-generated view locator that maps view models to views, and a `NavigationHost` control that shows the current page. |
 
 ## Features
 
@@ -112,18 +112,22 @@ internal partial class ChatView : UserControl, IViewFor<ChatViewModel>
 }
 ```
 
-Register the assemblies that contain your views and activate the view locator:
+Register your views with the generated `AddFluentlyViews()` and activate the view locator:
 
 ```csharp
 var services = new ServiceCollection()
     .AddLogging()
     .AddFluently()
-    .AddFluentlyAvalonia(typeof(App).Assembly)
+    .AddFluentlyViews()
     .AddTransient<ChatViewModel>()
     .BuildServiceProvider();
 
 this.UseFluently(services); // in App.OnFrameworkInitializationCompleted
 ```
+
+`AddFluentlyViews()` is generated at compile time by a source generator that ships with the package. It registers every non-abstract view in your project that implements `IViewFor<TViewModel>`, without reflection, so it works with trimming and Native AOT. The compiler reports an error when a view is not an Avalonia `Control` (`FLUENTLY001`), is private (`FLUENTLY002`), or when a view model has two views (`FLUENTLY003`).
+
+To register views by hand instead, for example from another assembly, use `AddFluentlyAvalonia(views => views.Add<ChatView, ChatViewModel>())`.
 
 Show the current page with a `NavigationHost`:
 
