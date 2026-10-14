@@ -5,6 +5,7 @@
         <RootNamespace>Fluently</RootNamespace>
         <Description>Avalonia integration for Fluently: shows the views registered with AddFluentlyViews() and the current page in a NavigationHost.</Description>
         <PackageTags>mvvm;navigation;avalonia</PackageTags>
+        <PackageValidationBaselineVersion>0.2.1</PackageValidationBaselineVersion>
     </PropertyGroup>
 
     <ItemGroup>
