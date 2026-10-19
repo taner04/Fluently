@@ -350,7 +350,14 @@ public sealed class NavigationPaneTests : TestBase, IDisposable
 
             Separators(pane).Count(static separator => separator.IsVisible).Should().Be(2);
 
-            pane.PaneContent = new Border();
+            var content = new Border();
+            pane.PaneContent = content;
+            Separators(pane).Count(static separator => separator.IsVisible).Should().Be(3);
+
+            content.IsVisible = false;
+            Separators(pane).Count(static separator => separator.IsVisible).Should().Be(2);
+
+            content.IsVisible = true;
             Separators(pane).Count(static separator => separator.IsVisible).Should().Be(3);
         });
 

@@ -391,8 +391,18 @@ public class NavigationPane : Control
         }
         else if (change.Property == PaneContentProperty)
         {
+            if (change.GetOldValue<Control?>() is { } oldContent)
+            {
+                oldContent.PropertyChanged -= OnPaneContentPropertyChanged;
+            }
+
+            if (PaneContent is { } newContent)
+            {
+                newContent.PropertyChanged += OnPaneContentPropertyChanged;
+            }
+
             _paneContent.Child = PaneContent;
-            _contentSeparator.IsVisible = PaneContent is not null;
+            UpdateContentSeparator();
         }
         else if (change.Property == IsPaneOpenProperty)
         {
@@ -473,6 +483,16 @@ public class NavigationPane : Control
             ContentControl.HorizontalContentAlignmentProperty,
             IsPaneOpen ? HorizontalAlignment.Left : HorizontalAlignment.Center);
     }
+
+    private void OnPaneContentPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == IsVisibleProperty)
+        {
+            UpdateContentSeparator();
+        }
+    }
+
+    private void UpdateContentSeparator() => _contentSeparator.IsVisible = PaneContent is { IsVisible: true };
 
     private void ArrangeContainers()
     {
