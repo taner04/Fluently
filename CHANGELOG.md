@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.3.0-preview.3] - 2026-10-19
+
+### Fixed
+
+- `NavigationPane` items show icons larger than 16 pixels in full instead of cutting them off
+
 ## [0.3.0-preview.2] - 2026-10-19
 
 ### Fixed
@@ -104,7 +110,8 @@ First release of `Fluently.Core`.
 - `AddFluently()` to register the services
 - Generic `NavigateToAsync<T>()` overloads
 
-[Unreleased]: https://github.com/taner04/Fluently/compare/v0.3.0-preview.2...HEAD
+[Unreleased]: https://github.com/taner04/Fluently/compare/v0.3.0-preview.3...HEAD
+[0.3.0-preview.3]: https://github.com/taner04/Fluently/compare/v0.3.0-preview.2...v0.3.0-preview.3
 [0.3.0-preview.2]: https://github.com/taner04/Fluently/compare/v0.3.0-preview.1...v0.3.0-preview.2
 [0.3.0-preview.1]: https://github.com/taner04/Fluently/compare/v0.2.2...v0.3.0-preview.1
 [0.2.2]: https://github.com/taner04/Fluently/compare/v0.2.1...v0.2.2

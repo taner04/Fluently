@@ -431,7 +431,12 @@ public class NavigationPane : Control
             return new Panel();
         }
 
-        var icon = new ContentPresenter { Width = ItemIconSize, VerticalAlignment = VerticalAlignment.Center };
+        var icon = new ContentPresenter
+        {
+            MinWidth = ItemIconSize,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
         icon.Bind(ContentPresenter.ContentProperty, item.GetObservable(NavigationPaneItem.IconProperty));
 
         var title = new TextBlock { Margin = new Thickness(16, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };

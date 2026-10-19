@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -366,6 +367,21 @@ public sealed class NavigationPaneTests : TestBase, IDisposable
             var center = toggle.TranslatePoint(new Point(toggle.Bounds.Width / 2, 0), pane)!.Value.X;
 
             center.Should().BeApproximately(32, 0.5);
+        });
+
+    [Fact]
+    public Task NavigationPane_Should_ShowWholeIcon_When_IconIsLargerThanDefault() =>
+        UiThread.Run(() =>
+        {
+            CreateItems();
+            var icon = new Border { Width = 24, Height = 24 };
+            _home.Icon = icon;
+            var pane = new NavigationPane { Navigation = _navigation, Items = { _home } };
+            TestWindow.Show(pane);
+            Dispatcher.UIThread.RunJobs();
+
+            icon.Bounds.Width.Should().Be(24);
+            icon.GetVisualParent<ContentPresenter>()!.Bounds.Width.Should().BeGreaterThanOrEqualTo(24);
         });
 
     [Fact]
