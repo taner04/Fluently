@@ -13,18 +13,29 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <EmbeddedResource Include="Generators/Views/ViewRegistrations.cs.template"
+                          LogicalName="Fluently.SourceGenerator.Templates.ViewRegistrations.cs.template"
+                          WithCulture="false"/>
+        <EmbeddedResource Include="Generators/ViewModels/ViewModelRegistrations.cs.template"
+                          LogicalName="Fluently.SourceGenerator.Templates.ViewModelRegistrations.cs.template"
+                          WithCulture="false"/>
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all"/>
         <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all"/>
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Remove="MinVer"/>
-        <None Remove="$(MSBuildThisFileDirectory)../../README.md"/>
     </ItemGroup>
 
     <ItemGroup>
         <Using Include="System.Collections.Immutable"/>
         <Using Include="System.Text"/>
+        <Using Include="Fluently.SourceGenerator.Generators.Common"/>
+        <Using Include="Fluently.SourceGenerator.Generators.ViewModels.Enums"/>
+        <Using Include="Fluently.SourceGenerator.Generators.ViewModels.Models"/>
         <Using Include="Fluently.SourceGenerator.Generators.Views.Enums"/>
         <Using Include="Fluently.SourceGenerator.Generators.Views.Models"/>
         <Using Include="Microsoft.CodeAnalysis"/>

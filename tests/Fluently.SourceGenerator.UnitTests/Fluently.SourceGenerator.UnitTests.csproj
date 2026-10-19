@@ -15,6 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Using Include="Fluently.SourceGenerator.Generators.ViewModels"/>
         <Using Include="Fluently.SourceGenerator.Generators.Views"/>
         <Using Include="Microsoft.CodeAnalysis"/>
         <Using Include="Microsoft.CodeAnalysis.CSharp"/>

@@ -1,4 +1,4 @@
-namespace Fluently.SourceGenerator.Generators.Views.Models;
+namespace Fluently.SourceGenerator.Generators.Common;
 
 internal readonly record struct SourceLocation(
     bool IsInSource,

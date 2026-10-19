@@ -46,7 +46,62 @@ public sealed class ViewRegistrationGeneratorTests
         z.Should().BeGreaterThan(a);
         first.GeneratedSource.Should().Contain("[global::System.Runtime.CompilerServices.ModuleInitializer]");
         second.GeneratedSource.Should().Be(first.GeneratedSource);
-        AssertNoErrors(first);
+        first.ShouldHaveNoErrors();
+    }
+
+    [Fact]
+    public void Generator_Should_RegisterView_When_BaseClassImplementsViewFor()
+    {
+        const string source = """
+                              using Avalonia.Controls;
+                              using Fluently;
+
+                              public sealed class ViewModel;
+
+                              public abstract class BaseView<TViewModel>(TViewModel viewModel) : UserControl, IViewFor<TViewModel>
+                              {
+                                  public TViewModel ViewModel { get; } = viewModel;
+                              }
+
+                              public sealed class DerivedView(ViewModel viewModel) : BaseView<ViewModel>(viewModel);
+                              """;
+
+        var result = GeneratorTestHelper.Run(source);
+
+        result.GeneratedSource.Should().Contain(
+            "global::Fluently.ViewRegistry.Add<global::ViewModel>(static (services, viewModel) => new global::DerivedView(viewModel));");
+        result.ShouldHaveNoErrors();
+    }
+
+    [Fact]
+    public void Generator_Should_RegisterOnlyOwnViewModel_When_ViewDerivesFromConcreteView()
+    {
+        const string source = """
+                              using Avalonia.Controls;
+                              using Fluently;
+
+                              public sealed class ChatViewModel;
+                              public sealed class SpecialViewModel;
+
+                              public class BaseChatView(ChatViewModel viewModel) : UserControl, IViewFor<ChatViewModel>
+                              {
+                                  public ChatViewModel ViewModel { get; } = viewModel;
+                              }
+
+                              public sealed class SpecialChatView(SpecialViewModel special) : BaseChatView(new ChatViewModel()), IViewFor<SpecialViewModel>
+                              {
+                                  SpecialViewModel IViewFor<SpecialViewModel>.ViewModel => special;
+                              }
+                              """;
+
+        var result = GeneratorTestHelper.Run(source);
+
+        result.GeneratedSource.Should()
+            .Contain(
+                "ViewRegistry.Add<global::ChatViewModel>(static (services, viewModel) => new global::BaseChatView(viewModel));")
+            .And.Contain(
+                "ViewRegistry.Add<global::SpecialViewModel>(static (services, viewModel) => new global::SpecialChatView(viewModel));");
+        result.ShouldHaveNoErrors();
     }
 
     [Fact]
@@ -74,7 +129,7 @@ public sealed class ViewRegistrationGeneratorTests
 
         result.GeneratedSource.Should().Contain(
             $"new global::CallView(viewModel, {GetRequiredService}<global::Audio>(services), {GetService}<global::Theme>(services))");
-        AssertNoErrors(result);
+        result.ShouldHaveNoErrors();
     }
 
     [Fact]
@@ -103,7 +158,7 @@ public sealed class ViewRegistrationGeneratorTests
 
         result.GeneratedSource.Should().Contain("new global::Views.NestedView(viewModel)");
         result.GeneratedSource!.Split("ViewRegistry.Add<").Should().HaveCount(2);
-        AssertNoErrors(result);
+        result.ShouldHaveNoErrors();
     }
 
     [Fact]
@@ -129,7 +184,7 @@ public sealed class ViewRegistrationGeneratorTests
         var result = GeneratorTestHelper.Run(source);
 
         result.GeneratedSource.Should().BeNull();
-        AssertNoErrors(result);
+        result.ShouldHaveNoErrors();
     }
 
     [Fact]
@@ -229,7 +284,7 @@ public sealed class ViewRegistrationGeneratorTests
     [Fact]
     public void Generator_Should_GenerateNothing_When_FluentlyIsNotReferenced()
     {
-        var result = GeneratorTestHelper.Run("public sealed class Anything;", referenceFluently: false);
+        var result = GeneratorTestHelper.Run("public sealed class Anything;", false);
 
         result.GeneratedSource.Should().BeNull();
         result.GeneratorDiagnostics.Should().BeEmpty();
@@ -267,14 +322,6 @@ public sealed class ViewRegistrationGeneratorTests
         var result = GeneratorTestHelper.Run(source, referenceAvalonia: false);
 
         result.GeneratedSource.Should().Contain("new global::ConsoleView(viewModel)");
-        AssertNoErrors(result);
-    }
-
-    private static void AssertNoErrors(GeneratorTestResult result)
-    {
-        result.GeneratorDiagnostics.Should().BeEmpty();
-        result.CompilationDiagnostics
-            .Where(static diagnostic => diagnostic.Severity == DiagnosticSeverity.Error)
-            .Should().BeEmpty();
+        result.ShouldHaveNoErrors();
     }
 }
