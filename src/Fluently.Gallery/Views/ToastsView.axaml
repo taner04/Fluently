@@ -1,0 +1,38 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Fluently.Gallery.ViewModels"
+             xmlns:snippets="using:Fluently.Gallery.Snippets"
+             xmlns:controls="using:Fluently.Gallery.Controls"
+             x:Class="Fluently.Gallery.Views.ToastsView"
+             x:DataType="vm:ToastsViewModel">
+    <StackPanel Spacing="28">
+        <controls:PageHeader Title="Toasts"
+                             Description="Short notifications, here in the bottom right corner. The newest is nearest the edge, at most five are shown, and each closes by itself after six seconds." />
+
+        <controls:ExampleCard Title="Severities"
+                              Description="The built-in toast shows a title and a message on a card tinted in the color of its severity. Wrap the window's content in a ToastHost once, outside the DialogHost so toasts show above dialogs."
+                              CSharp="{x:Static snippets:CodeSnippets.Toasts}"
+                              Xaml="{x:Static snippets:CodeSnippets.ToastHost}">
+            <controls:ExampleCard.Example>
+                <WrapPanel>
+                    <Button Content="Information" Command="{Binding ShowInformationCommand}" Margin="0,0,8,0" />
+                    <Button Content="Success" Command="{Binding ShowSuccessCommand}" Margin="0,0,8,0" />
+                    <Button Content="Warning" Command="{Binding ShowWarningCommand}" Margin="0,0,8,0" />
+                    <Button Content="Error" Command="{Binding ShowErrorCommand}" Margin="0,0,8,0" />
+                    <Button Content="Until closed" Command="{Binding ShowStickyCommand}" />
+                </WrapPanel>
+            </controls:ExampleCard.Example>
+        </controls:ExampleCard>
+
+        <controls:SettingCard Icon="{StaticResource PositionIcon}" Header="Position"
+                              Description="Set IToastService.Position from any view model; the newest toast is always nearest the edge.">
+            <controls:SettingCard.Action>
+                <ComboBox MinWidth="160" ItemsSource="{Binding Positions}" SelectedItem="{Binding Position}" />
+            </controls:SettingCard.Action>
+        </controls:SettingCard>
+
+        <controls:ExampleCard Title="Custom toasts"
+                              Description="Any IToast view model is shown with its own view. Delete an item on the Navigation page to see one with an Undo button."
+                              CSharp="{x:Static snippets:CodeSnippets.UndoToast}" />
+    </StackPanel>
+</UserControl>

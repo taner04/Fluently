@@ -1,0 +1,18 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Fluently.Gallery.ViewModels"
+             xmlns:controls="using:Fluently.Gallery.Controls"
+             x:Class="Fluently.Gallery.Views.DetailsView"
+             x:DataType="vm:DetailsViewModel">
+    <StackPanel Spacing="28">
+        <controls:PageHeader Title="{Binding Item.Name, FallbackValue='Item not found'}"
+                             Description="{Binding Item.Id, StringFormat='Opened with NavigateToAsync&lt;DetailsViewModel, int&gt;({0})'}" />
+
+        <Border Classes="card">
+            <StackPanel Spacing="4">
+                <TextBlock Text="About this item" Classes="heading" />
+                <TextBlock Text="{Binding Item.Description}" Classes="caption" />
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

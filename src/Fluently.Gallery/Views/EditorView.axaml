@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Fluently.Gallery.ViewModels"
+             xmlns:snippets="using:Fluently.Gallery.Snippets"
+             xmlns:controls="using:Fluently.Gallery.Controls"
+             x:Class="Fluently.Gallery.Views.EditorView"
+             x:DataType="vm:EditorViewModel">
+    <StackPanel Spacing="28">
+        <controls:PageHeader Title="Guards"
+                             Description="Edit the text, then pick another page. ICanNavigateFrom asks with a dialog before the changes are lost." />
+
+        <controls:ExampleCard Title="Notes"
+                              Description="An editor whose page refuses to be left while it has unsaved changes."
+                              CSharp="{x:Static snippets:CodeSnippets.Guard}">
+            <controls:ExampleCard.Example>
+                <StackPanel Spacing="12">
+                    <TextBox Text="{Binding Text}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="140" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Border Background="{DynamicResource SubtleFillColorSecondaryBrush}" CornerRadius="10"
+                                Padding="10,3" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                IsVisible="{Binding HasChanges}">
+                            <TextBlock Text="Unsaved changes" FontSize="12" />
+                        </Border>
+                        <Button Grid.Column="1" Content="Save" Command="{Binding SaveCommand}" Classes="accent" />
+                    </Grid>
+                </StackPanel>
+            </controls:ExampleCard.Example>
+        </controls:ExampleCard>
+    </StackPanel>
+</UserControl>

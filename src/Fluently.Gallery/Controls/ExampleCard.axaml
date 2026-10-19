@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:Fluently.Gallery.Controls"
+             x:Class="Fluently.Gallery.Controls.ExampleCard"
+             x:DataType="controls:ExampleCard"
+             x:Name="Card">
+    <StackPanel Spacing="10">
+        <StackPanel Spacing="2">
+            <TextBlock Text="{Binding #Card.Title}" Classes="heading" />
+            <TextBlock Text="{Binding #Card.Description}" Classes="caption"
+                       IsVisible="{Binding #Card.Description, Converter={x:Static ObjectConverters.IsNotNull}}" />
+        </StackPanel>
+        <StackPanel>
+            <Border x:Name="ExampleArea" Classes="example">
+                <ContentPresenter Content="{Binding #Card.Example}" />
+            </Border>
+            <Border x:Name="CodeArea" Classes="example-code">
+                <Panel>
+                    <Expander x:Name="CodeExpander" Header="Source code">
+                        <StackPanel x:Name="CodePanel" Spacing="12">
+                            <controls:CodeBlock Label="C#" Code="{Binding #Card.CSharp}" Language="CSharp"
+                                                IsVisible="{Binding #Card.CSharp, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                            <controls:CodeBlock Label="XAML" Code="{Binding #Card.Xaml}" Language="Xml"
+                                                IsVisible="{Binding #Card.Xaml, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                        </StackPanel>
+                    </Expander>
+                    <Border x:Name="InlineCode" Padding="16" />
+                </Panel>
+            </Border>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

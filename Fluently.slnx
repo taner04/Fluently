@@ -1,15 +1,13 @@
 <Solution>
-    <Folder Name="/samples/">
-        <Project Path="samples/Fluently.Samples/Fluently.Samples.csproj" />
-    </Folder>
     <Folder Name="/src/">
-        <Project Path="src/Fluently.SourceGenerator/Fluently.SourceGenerator.csproj" />
-        <Project Path="src/Fluently.Avalonia/Fluently.Avalonia.csproj" />
-        <Project Path="src/Fluently.Core/Fluently.Core.csproj" />
+        <Project Path="src/Fluently.SourceGenerator/Fluently.SourceGenerator.csproj"/>
+        <Project Path="src/Fluently.Avalonia/Fluently.Avalonia.csproj"/>
+        <Project Path="src/Fluently.Core/Fluently.Core.csproj"/>
+        <Project Path="src/Fluently.Gallery/Fluently.Gallery.csproj"/>
     </Folder>
     <Folder Name="/tests/">
-        <Project Path="tests/Fluently.SourceGenerator.UnitTests/Fluently.SourceGenerator.UnitTests.csproj" />
-        <Project Path="tests/Fluently.Avalonia.UnitTests/Fluently.Avalonia.UnitTests.csproj" />
-        <Project Path="tests/Fluently.Core.UnitTests/Fluently.Core.UnitTests.csproj" />
+        <Project Path="tests/Fluently.SourceGenerator.UnitTests/Fluently.SourceGenerator.UnitTests.csproj"/>
+        <Project Path="tests/Fluently.Avalonia.UnitTests/Fluently.Avalonia.UnitTests.csproj"/>
+        <Project Path="tests/Fluently.Core.UnitTests/Fluently.Core.UnitTests.csproj"/>
     </Folder>
 </Solution>

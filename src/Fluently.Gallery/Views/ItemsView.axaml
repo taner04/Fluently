@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Fluently.Gallery.ViewModels"
+             xmlns:snippets="using:Fluently.Gallery.Snippets"
+             xmlns:controls="using:Fluently.Gallery.Controls"
+             xmlns:models="using:Fluently.Gallery.Models"
+             x:Class="Fluently.Gallery.Views.ItemsView"
+             x:DataType="vm:ItemsViewModel">
+    <StackPanel Spacing="28">
+        <controls:PageHeader Title="Navigation"
+                             Description="Open an item to navigate with a typed parameter. Use Back to return; this page keeps its state." />
+
+        <ItemsControl ItemsSource="{Binding Items}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Spacing="6" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="models:SampleItem">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                        <Button Classes="card"
+                                Command="{Binding $parent[ItemsControl].((vm:ItemsViewModel)DataContext).OpenCommand}"
+                                CommandParameter="{Binding}">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Border Classes="icon">
+                                    <TextBlock Text="{Binding Id}" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <StackPanel Grid.Column="1" Margin="16,0" Spacing="2" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding Description}" Classes="caption" />
+                                </StackPanel>
+                                <PathIcon Grid.Column="2" Data="{StaticResource ChevronIcon}" Width="12" Height="12" />
+                            </Grid>
+                        </Button>
+                        <Button Grid.Column="1" Classes="card" Padding="0" Width="56"
+                                AutomationProperties.Name="Delete"
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                Command="{Binding $parent[ItemsControl].((vm:ItemsViewModel)DataContext).DeleteCommand}"
+                                CommandParameter="{Binding}">
+                            <PathIcon Data="{StaticResource DeleteIcon}" Width="16" Height="16" />
+                        </Button>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <controls:ExampleCard Title="Navigate with a parameter"
+                              Description="Open an item to navigate with its id."
+                              CSharp="{x:Static snippets:CodeSnippets.TypedNavigation}" />
+
+        <controls:ExampleCard Title="Delete with a dialog and undo"
+                              Description="Delete an item in place: a dialog asks first, and a toast offers to undo."
+                              CSharp="{x:Static snippets:CodeSnippets.DeleteWithDialog}" />
+    </StackPanel>
+</UserControl>

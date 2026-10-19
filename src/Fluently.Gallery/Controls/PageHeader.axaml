@@ -1,0 +1,12 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:Fluently.Gallery.Controls"
+             x:Class="Fluently.Gallery.Controls.PageHeader"
+             x:DataType="controls:PageHeader"
+             x:Name="Header">
+    <StackPanel Spacing="6">
+        <TextBlock Text="{Binding #Header.Title}" Classes="title" />
+        <TextBlock Text="{Binding #Header.Description}" Classes="subtitle"
+                   IsVisible="{Binding #Header.Description, Converter={x:Static ObjectConverters.IsNotNull}}" />
+    </StackPanel>
+</UserControl>

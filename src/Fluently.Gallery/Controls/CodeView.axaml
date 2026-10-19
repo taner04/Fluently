@@ -1,0 +1,14 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:avaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
+             x:Class="Fluently.Gallery.Controls.CodeView">
+    <avaloniaEdit:TextEditor x:Name="Editor"
+                             IsReadOnly="True"
+                             ShowLineNumbers="False"
+                             WordWrap="True"
+                             Background="Transparent"
+                             FontFamily="Cascadia Code,Consolas,Menlo,monospace"
+                             FontSize="13"
+                             HorizontalScrollBarVisibility="Disabled"
+                             VerticalScrollBarVisibility="Disabled" />
+</UserControl>

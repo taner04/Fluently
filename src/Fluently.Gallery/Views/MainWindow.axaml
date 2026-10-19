@@ -1,0 +1,54 @@
+<fluently:FluentWindow xmlns="https://github.com/avaloniaui"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                       xmlns:fluently="https://github.com/taner04/fluently"
+                       xmlns:vm="using:Fluently.Gallery.ViewModels"
+                       x:Class="Fluently.Gallery.Views.MainWindow"
+                       x:DataType="vm:MainWindowViewModel"
+                       Title="Fluently Gallery"
+                       Icon="/Assets/logo.png"
+                       Navigation="{Binding Navigation}"
+                       Width="1200" Height="760" MinWidth="720" MinHeight="480"
+                       Background="{DynamicResource SolidBackgroundFillColorBaseBrush}">
+    <fluently:ToastHost Toasts="{Binding Toasts}">
+        <fluently:DialogHost Dialogs="{Binding Dialogs}" DismissOnBackdropClick="True"
+                             Backdrop="{DynamicResource SmokeFillColorDefaultBrush}">
+            <Grid RowDefinitions="Auto,*">
+                <fluently:TitleBar>
+                    <fluently:TitleBar.Icon>
+                        <Image Source="/Assets/logo.png" Width="18" Height="18" />
+                    </fluently:TitleBar.Icon>
+                </fluently:TitleBar>
+
+                <fluently:NavigationPane Grid.Row="1" IsSearchVisible="True"
+                                         IsBackButtonVisible="False">
+                    <fluently:NavigationPane.Items>
+                        <fluently:NavigationPaneItem Title="Home" Icon="{StaticResource HomeIcon}"
+                                                     Page="{x:Type vm:HomeViewModel}" />
+                        <fluently:NavigationPaneItem Title="Navigation" Icon="{StaticResource NavigationIcon}"
+                                                     Page="{x:Type vm:ItemsViewModel}" />
+                        <fluently:NavigationPaneItem Title="Guards" Icon="{StaticResource GuardIcon}"
+                                                     Page="{x:Type vm:EditorViewModel}" />
+                        <fluently:NavigationPaneItem Title="Dialogs" Icon="{StaticResource DialogIcon}"
+                                                     Page="{x:Type vm:DialogsViewModel}" />
+                        <fluently:NavigationPaneItem Title="Toasts" Icon="{StaticResource ToastIcon}"
+                                                     Page="{x:Type vm:ToastsViewModel}" />
+                    </fluently:NavigationPane.Items>
+                    <fluently:NavigationPane.FooterItems>
+                        <fluently:NavigationPaneItem Title="Settings" Icon="{StaticResource SettingsIcon}"
+                                                     Page="{x:Type vm:SettingsViewModel}" />
+                    </fluently:NavigationPane.FooterItems>
+
+                    <Border Classes="layer">
+                        <ScrollViewer>
+                            <fluently:NavigationHost Navigation="{Binding Navigation}" Margin="40,28,40,40">
+                                <fluently:NavigationHost.PageTransition>
+                                    <CrossFade Duration="0:0:0.15" />
+                                </fluently:NavigationHost.PageTransition>
+                            </fluently:NavigationHost>
+                        </ScrollViewer>
+                    </Border>
+                </fluently:NavigationPane>
+            </Grid>
+        </fluently:DialogHost>
+    </fluently:ToastHost>
+</fluently:FluentWindow>

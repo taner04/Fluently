@@ -1,0 +1,83 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Fluently.Gallery.ViewModels"
+             xmlns:snippets="using:Fluently.Gallery.Snippets"
+             xmlns:controls="using:Fluently.Gallery.Controls"
+             x:Class="Fluently.Gallery.Views.HomeView"
+             x:DataType="vm:HomeViewModel">
+    <StackPanel Spacing="28">
+        <Grid RowDefinitions="Auto,Auto">
+            <Border Classes="hero" ClipToBounds="True">
+                <Grid>
+                    <StackPanel Margin="40,40,40,0" Spacing="8" MaxWidth="560" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" Spacing="16">
+                            <Image Source="/Assets/logo.png" Width="56" Height="56" />
+                            <TextBlock Text="Fluently" FontSize="40" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <TextBlock FontSize="15" TextWrapping="Wrap" Opacity="0.9"
+                                   Text="View-model-first navigation, dialogs and toasts for Avalonia. Every page here is built with nothing but NavigationHost, DialogHost, ToastHost and ViewFor." />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <UniformGrid Grid.Row="1" Columns="4" Margin="24,-84,24,0">
+                <Button Classes="tile" Margin="0,0,6,0" Command="{Binding OpenCommand}"
+                        CommandParameter="{x:Type vm:ItemsViewModel}">
+                    <StackPanel Spacing="12">
+                        <Border Classes="icon" HorizontalAlignment="Left">
+                            <PathIcon Data="{StaticResource NavigationIcon}" />
+                        </Border>
+                        <TextBlock Text="Navigation" Classes="heading" />
+                        <TextBlock Classes="caption"
+                                   Text="Typed parameters, back and forward history, and pages from their own scope." />
+                    </StackPanel>
+                </Button>
+                <Button Classes="tile" Margin="3,0" Command="{Binding OpenCommand}"
+                        CommandParameter="{x:Type vm:EditorViewModel}">
+                    <StackPanel Spacing="12">
+                        <Border Classes="icon" HorizontalAlignment="Left">
+                            <PathIcon Data="{StaticResource GuardIcon}" />
+                        </Border>
+                        <TextBlock Text="Guards" Classes="heading" />
+                        <TextBlock Classes="caption" Text="A page with unsaved changes asks before it can be left." />
+                    </StackPanel>
+                </Button>
+                <Button Classes="tile" Margin="3,0" Command="{Binding OpenCommand}"
+                        CommandParameter="{x:Type vm:DialogsViewModel}">
+                    <StackPanel Spacing="12">
+                        <Border Classes="icon" HorizontalAlignment="Left">
+                            <PathIcon Data="{StaticResource DialogIcon}" />
+                        </Border>
+                        <TextBlock Text="Dialogs" Classes="heading" />
+                        <TextBlock Classes="caption"
+                                   Text="Await a result from a dialog, stack dialogs, and refuse being dismissed." />
+                    </StackPanel>
+                </Button>
+                <Button Classes="tile" Margin="6,0,0,0" Command="{Binding OpenCommand}"
+                        CommandParameter="{x:Type vm:ToastsViewModel}">
+                    <StackPanel Spacing="12">
+                        <Border Classes="icon" HorizontalAlignment="Left">
+                            <PathIcon Data="{StaticResource ToastIcon}" />
+                        </Border>
+                        <TextBlock Text="Toasts" Classes="heading" />
+                        <TextBlock Classes="caption"
+                                   Text="Short notifications with a severity, or your own view with an Undo button." />
+                    </StackPanel>
+                </Button>
+            </UniformGrid>
+        </Grid>
+
+        <controls:ExampleCard Title="Getting started" CodeInline="True"
+                              Description="Register Fluently, add the view locator and show the current page."
+                              CSharp="{x:Static snippets:CodeSnippets.GettingStarted}"
+                              Xaml="{x:Static snippets:CodeSnippets.GettingStartedXaml}" />
+
+        <controls:ExampleCard Title="View models" CodeInline="True"
+                              Description="Mark pages, dialogs and toasts with an attribute; AddViewModels() registers them with that lifetime."
+                              CSharp="{x:Static snippets:CodeSnippets.Registration}" />
+
+        <controls:ExampleCard Title="Views" CodeInline="True"
+                              Description="Derive a view from ViewFor; the source generator registers it, so there is no registration code."
+                              CSharp="{x:Static snippets:CodeSnippets.ViewFor}" />
+    </StackPanel>
+</UserControl>

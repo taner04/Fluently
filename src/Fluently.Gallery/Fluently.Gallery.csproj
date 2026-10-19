@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks></TargetFrameworks>
+        <TargetFramework>net10.0</TargetFramework>
+        <OutputType>WinExe</OutputType>
+        <IsPackable>false</IsPackable>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <IncludeSymbols>false</IncludeSymbols>
+        <EnablePackageValidation>false</EnablePackageValidation>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <ApplicationIcon>Assets/logo.ico</ApplicationIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia"/>
+        <PackageReference Include="Avalonia.Desktop"/>
+        <PackageReference Include="AvaloniaEdit.TextMate"/>
+        <PackageReference Include="CommunityToolkit.Mvvm"/>
+        <PackageReference Include="FluentAvaloniaUI"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
+        <PackageReference Include="Microsoft.Extensions.Logging"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Console"/>
+        <PackageReference Include="TextMateSharp.Grammars"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Remove="MinVer"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Assets/**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="**\*.axaml.cs" DependentUpon="%(Filename)"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../Fluently.Avalonia/Fluently.Avalonia.csproj"/>
+        <ProjectReference Include="../Fluently.SourceGenerator/Fluently.SourceGenerator.csproj"
+                          OutputItemType="Analyzer"
+                          ReferenceOutputAssembly="false"/>
+    </ItemGroup>
+
+</Project>

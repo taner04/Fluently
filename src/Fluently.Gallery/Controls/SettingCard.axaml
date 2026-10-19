@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:Fluently.Gallery.Controls"
+             x:Class="Fluently.Gallery.Controls.SettingCard"
+             x:DataType="controls:SettingCard"
+             x:Name="Card">
+    <Border Classes="card" Padding="16,14">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+            <PathIcon Data="{Binding #Card.Icon}" Width="20" Height="20" Margin="4,0,20,0" />
+            <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="{Binding #Card.Header}" />
+                <TextBlock Text="{Binding #Card.Description}" Classes="caption"
+                           IsVisible="{Binding #Card.Description, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            </StackPanel>
+            <ContentPresenter Grid.Column="2" Margin="16,0,0,0" VerticalAlignment="Center"
+                              Content="{Binding #Card.Action}" />
+        </Grid>
+    </Border>
+</UserControl>

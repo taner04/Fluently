@@ -1,0 +1,20 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Fluently.Gallery.ViewModels"
+             x:Class="Fluently.Gallery.Views.ConfirmDialogView"
+             x:DataType="vm:ConfirmDialogViewModel">
+    <Border Classes="dialog">
+        <StackPanel Spacing="20">
+            <StackPanel Spacing="8">
+                <TextBlock Text="{Binding Request.Title}" Classes="heading" FontSize="20" />
+                <TextBlock Text="{Binding Request.Message}" Classes="subtitle" />
+            </StackPanel>
+            <UniformGrid Columns="2">
+                <Button Content="{Binding Request.ConfirmText}" Command="{Binding ConfirmCommand}" Classes="accent"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,0,4,0" />
+                <Button Content="Cancel" Command="{Binding CancelCommand}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="4,0,0,0" />
+            </UniformGrid>
+        </StackPanel>
+    </Border>
+</UserControl>

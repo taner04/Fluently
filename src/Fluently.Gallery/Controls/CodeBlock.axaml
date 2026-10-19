@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:Fluently.Gallery.Controls"
+             x:Class="Fluently.Gallery.Controls.CodeBlock"
+             x:DataType="controls:CodeBlock"
+             x:Name="Block">
+    <Border Classes="code-block">
+        <Grid RowDefinitions="Auto,Auto">
+            <Grid ColumnDefinitions="*,Auto" Margin="16,4,6,4">
+                <TextBlock Text="{Binding #Block.Label}" Classes="code-label" VerticalAlignment="Center" />
+                <Button Grid.Column="1" Classes="copy" Click="OnCopyClick" ToolTip.Tip="Copy"
+                        AutomationProperties.Name="Copy">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <PathIcon x:Name="CopyIcon" Data="{StaticResource CopyIcon}" Width="12" Height="12" />
+                        <TextBlock x:Name="CopyText" Text="Copy" FontSize="12" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+            <Border Grid.Row="1" Classes="code-block-body">
+                <controls:CodeView Code="{Binding #Block.Code}" Language="{Binding #Block.Language}" />
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Fluently.Gallery.ViewModels"
+             xmlns:controls="using:Fluently.Gallery.Controls"
+             x:Class="Fluently.Gallery.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+    <StackPanel Spacing="28">
+        <controls:PageHeader Title="Settings" />
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Appearance" Classes="section" />
+            <controls:SettingCard Icon="{StaticResource ThemeIcon}" Header="App theme"
+                                  Description="Select which app theme to display.">
+                <controls:SettingCard.Action>
+                    <ComboBox MinWidth="160" ItemsSource="{Binding Themes}" SelectedItem="{Binding Theme}" />
+                </controls:SettingCard.Action>
+            </controls:SettingCard>
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="About" Classes="section" />
+            <controls:SettingCard Icon="{StaticResource InfoIcon}" Header="Fluently Gallery"
+                                  Description="View-model-first navigation, dialogs and toasts for Avalonia.">
+                <controls:SettingCard.Action>
+                    <TextBlock Text="{Binding Version}" Classes="caption" />
+                </controls:SettingCard.Action>
+            </controls:SettingCard>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

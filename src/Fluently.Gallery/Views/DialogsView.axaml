@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Fluently.Gallery.ViewModels"
+             xmlns:snippets="using:Fluently.Gallery.Snippets"
+             xmlns:controls="using:Fluently.Gallery.Controls"
+             x:Class="Fluently.Gallery.Views.DialogsView"
+             x:DataType="vm:DialogsViewModel">
+    <StackPanel Spacing="28">
+        <controls:PageHeader Title="Dialogs"
+                             Description="ShowAsync waits until a dialog closes and returns its result. Press Escape or click outside to dismiss." />
+
+        <controls:ExampleCard Title="Confirm"
+                              Description="A dialog that returns a bool, opened with a typed parameter. Wrap the window's content in a DialogHost once; every dialog is shown above it with a backdrop."
+                              CSharp="{x:Static snippets:CodeSnippets.ConfirmDialog}"
+                              Xaml="{x:Static snippets:CodeSnippets.DialogHost}">
+            <controls:ExampleCard.Example>
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <Button Content="Show" Command="{Binding ConfirmCommand}" Classes="accent" />
+                    <TextBlock Text="{Binding LastResult}" Classes="caption" VerticalAlignment="Center" />
+                </StackPanel>
+            </controls:ExampleCard.Example>
+        </controls:ExampleCard>
+
+        <controls:ExampleCard Title="Input"
+                              Description="A dialog that returns a string. Type something, then press Escape: it asks with a second dialog on top."
+                              CSharp="{x:Static snippets:CodeSnippets.InputDialog}">
+            <controls:ExampleCard.Example>
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <Button Content="Show" Command="{Binding RenameCommand}" Classes="accent" />
+                    <TextBlock Text="{Binding LastResult}" Classes="caption" VerticalAlignment="Center" />
+                </StackPanel>
+            </controls:ExampleCard.Example>
+        </controls:ExampleCard>
+    </StackPanel>
+</UserControl>
