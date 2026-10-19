@@ -69,3 +69,8 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# graphify
+graphify-out/
+.claude/
+CLAUDE.md

@@ -7,6 +7,7 @@
         <Authors>taner04</Authors>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>icon.png</PackageIcon>
         <PackageProjectUrl>https://github.com/taner04/Fluently</PackageProjectUrl>
         <RepositoryUrl>https://github.com/taner04/Fluently</RepositoryUrl>
         <PackageReleaseNotes>https://github.com/taner04/Fluently/blob/main/CHANGELOG.md</PackageReleaseNotes>
@@ -27,7 +28,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="$(MSBuildThisFileDirectory)../README.md" Pack="true" PackagePath="\"/>
+        <None Include="$(MSBuildThisFileDirectory)../assets/icon.png" Pack="true" PackagePath="\" Visible="false"/>
+        <None Include="$(MSBuildProjectDirectory)/README.md" Pack="true" PackagePath="\" Condition="Exists('$(MSBuildProjectDirectory)/README.md')"/>
     </ItemGroup>
 
 </Project>
