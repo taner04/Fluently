@@ -1,6 +1,6 @@
+using Fluently.Core.UnitTests.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
-using Fluently.Core.UnitTests.Infrastructure;
 
 namespace Fluently.Core.UnitTests.Tests.Services.Navigation;
 
@@ -439,11 +439,12 @@ public sealed class NavigationServiceTests : TestBase, IDisposable
         {
             var first = new FirstPage();
             var second = new SecondPage();
-            using var serviceProvider = new ServiceCollection()
+            await using var serviceProvider = new ServiceCollection()
                 .AddSingleton(first)
                 .AddSingleton(second)
                 .BuildServiceProvider();
-            using var navigationService = new NavigationService(serviceProvider, NullLogger<NavigationService>.Instance);
+            await using var navigationService =
+                new NavigationService(serviceProvider, NullLogger<NavigationService>.Instance);
             using var cancellation = new CancellationTokenSource();
             var gate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
             first.Entering = _ => gate.Task;
@@ -549,5 +550,32 @@ public sealed class NavigationServiceTests : TestBase, IDisposable
     {
         _created.Add(page);
         return page;
+    }
+
+    [Fact]
+    public async Task NavigateToAsyncType_Should_PassTypedParameter_When_PageAcceptsIt()
+    {
+        var navigated = await _navigationService.NavigateToAsync(typeof(TypedPage), "hello", CurrentCancellationToken);
+
+        navigated.Should().BeTrue();
+        _navigationService.CurrentPage.Should().BeSameAs(_typed);
+        _typed.Parameters.Should().Equal("hello");
+    }
+
+    [Fact]
+    public async Task NavigateToAsyncType_Should_ReturnFalse_When_PageDoesNotAcceptParameterType()
+    {
+        var navigated = await _navigationService.NavigateToAsync(typeof(TypedPage), 1.5, CurrentCancellationToken);
+
+        navigated.Should().BeFalse();
+        _navigationService.CurrentPage.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task NavigateToAsyncType_Should_Throw_When_TypeIsNotAPage()
+    {
+        var navigate = () => _navigationService.NavigateToAsync(typeof(Greeting), 1, CurrentCancellationToken);
+
+        await navigate.Should().ThrowAsync<ArgumentException>();
     }
 }

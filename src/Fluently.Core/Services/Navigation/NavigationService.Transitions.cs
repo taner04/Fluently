@@ -9,7 +9,7 @@ internal sealed partial class NavigationService
     {
         NavigationEntry target;
         HistoryState before;
-        await EnterTransitionAsync(cancellationToken);
+        await _transitionLock.EnterAsync(cancellationToken);
         try
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
@@ -78,7 +78,7 @@ internal sealed partial class NavigationService
     {
         NavigationEntry? target;
         HistoryState before;
-        await EnterTransitionAsync(cancellationToken);
+        await _transitionLock.EnterAsync(cancellationToken);
         try
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
@@ -118,34 +118,11 @@ internal sealed partial class NavigationService
         return true;
     }
 
-    // SemaphoreSlim can still grant a waiter whose token was canceled just before the lock was released,
-    // so a navigation canceled while waiting gives the lock back and never touches a page.
-    private async Task EnterTransitionAsync(CancellationToken cancellationToken)
-    {
-        await _transitionLock.WaitAsync(cancellationToken);
-        if (cancellationToken.IsCancellationRequested)
-        {
-            _transitionLock.Release();
-            cancellationToken.ThrowIfCancellationRequested();
-        }
-    }
-
-    private async Task<bool> CanLeaveAsync(NavigationEntry current, CancellationToken cancellationToken)
-    {
-        try
-        {
-            return await current.CanLeaveAsync(cancellationToken);
-        }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-        {
-            throw;
-        }
-        catch (Exception exception)
-        {
-            LogNavigationGuardFailed(current.Page.GetType(), exception);
-            return false;
-        }
-    }
+    private Task<bool> CanLeaveAsync(NavigationEntry current, CancellationToken cancellationToken) =>
+        Lifecycle.CanLeaveAsync(
+            current.Page,
+            exception => LogNavigationGuardFailed(current.Page.GetType(), exception),
+            cancellationToken);
 
     private async Task<bool> TransitionAsync(
         NavigationEntry? previous,

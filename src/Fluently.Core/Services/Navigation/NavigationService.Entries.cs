@@ -10,7 +10,7 @@ internal sealed partial class NavigationService
         try
         {
             var page = (INavigableViewModel)scope.ServiceProvider.GetRequiredService(viewModelType);
-            ViewModelServices.Track(page, scope.ServiceProvider);
+            Scopes.Track(page, scope.ServiceProvider);
             return new NavigationEntry(page, parameter, scope);
         }
         catch
@@ -28,32 +28,12 @@ internal sealed partial class NavigationService
         }
     }
 
-    private async Task ReleaseAsync(NavigationEntry entry)
-    {
-        ViewModelServices.Untrack(entry.Page, entry.Scope.ServiceProvider);
-        try
-        {
-            await entry.Scope.DisposeAsync();
-        }
-        catch (Exception exception)
-        {
-            LogPageDisposeFailed(entry.Page.GetType(), exception);
-        }
-    }
+    private Task ReleaseAsync(NavigationEntry entry) =>
+        Scopes.ReleaseAsync(entry.Page, entry.Scope,
+            exception => LogPageDisposeFailed(entry.Page.GetType(), exception));
 
-    // Only for Dispose(): a service that can only be disposed asynchronously makes this throw, which is logged.
-    private void Release(NavigationEntry entry)
-    {
-        ViewModelServices.Untrack(entry.Page, entry.Scope.ServiceProvider);
-        try
-        {
-            entry.Scope.Dispose();
-        }
-        catch (Exception exception)
-        {
-            LogPageDisposeFailed(entry.Page.GetType(), exception);
-        }
-    }
+    private void Release(NavigationEntry entry) =>
+        Scopes.Release(entry.Page, entry.Scope, exception => LogPageDisposeFailed(entry.Page.GetType(), exception));
 
     private List<NavigationEntry> TakeAllEntries()
     {

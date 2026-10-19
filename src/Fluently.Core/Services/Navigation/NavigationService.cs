@@ -1,9 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Fluently;
 
-internal sealed partial class NavigationService : INavigationService
+internal sealed partial class NavigationService : INavigationService, IViewSource
 {
     private readonly Stack<NavigationEntry> _backStack = new();
     private readonly Stack<NavigationEntry> _forwardStack = new();
@@ -17,10 +17,7 @@ internal sealed partial class NavigationService : INavigationService
     {
         _scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
         _logger = logger;
-
-        // The container creates this service from its root provider, which is where views of view models
-        // that Fluently did not create get their services from.
-        ViewModelServices.SetRoot(serviceProvider);
+        Scopes = serviceProvider.GetService<ViewModelScopes>() ?? new ViewModelScopes(serviceProvider);
     }
 
     public event EventHandler<NavigatedEventArgs>? Navigated;
@@ -31,34 +28,39 @@ internal sealed partial class NavigationService : INavigationService
 
     public bool CanGoForward => _forwardStack.Count > 0;
 
-    public Task<bool> NavigateToAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] TPage>(
-        CancellationToken cancellationToken = default)
-        where TPage : INavigableViewModel =>
-        NavigateToAsync(typeof(TPage), cancellationToken);
-
-    public Task<bool> NavigateToAsync<TPage, TParameter>(
-        TParameter parameter,
-        CancellationToken cancellationToken = default)
-        where TPage : INavigatedTo<TParameter>
-        where TParameter : notnull
-    {
-        ArgumentNullException.ThrowIfNull(parameter);
-        return NavigateCoreAsync(typeof(TPage), new NavigationParameter<TParameter>(parameter), cancellationToken);
-    }
-
     public Task<bool> NavigateToAsync(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] Type viewModelType,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
+        Type viewModelType,
         CancellationToken cancellationToken = default)
     {
         viewModelType.ThrowIfNotAssignableTo<INavigableViewModel>();
 
-        if (RequiresParameter(viewModelType))
+        if (NavigationParameter.IsRequiredBy(viewModelType))
         {
             LogParameterRequired(viewModelType);
             return Task.FromResult(false);
         }
 
         return NavigateCoreAsync(viewModelType, null, cancellationToken);
+    }
+
+    public Task<bool> NavigateToAsync<TParameter>(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
+        Type viewModelType,
+        TParameter parameter,
+        CancellationToken cancellationToken = default)
+        where TParameter : notnull
+    {
+        viewModelType.ThrowIfNotAssignableTo<INavigableViewModel>();
+        ArgumentNullException.ThrowIfNull(parameter);
+
+        if (!typeof(INavigatedTo<TParameter>).IsAssignableFrom(viewModelType))
+        {
+            LogParameterNotAccepted(viewModelType, typeof(TParameter));
+            return Task.FromResult(false);
+        }
+
+        return NavigateCoreAsync(viewModelType, new NavigationParameter<TParameter>(parameter), cancellationToken);
     }
 
     public Task<bool> GoBackAsync(CancellationToken cancellationToken = default) =>
@@ -70,7 +72,7 @@ internal sealed partial class NavigationService : INavigationService
     public async Task ClearHistoryAsync(CancellationToken cancellationToken = default)
     {
         HistoryState before;
-        await EnterTransitionAsync(cancellationToken);
+        await _transitionLock.EnterAsync(cancellationToken);
         try
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
@@ -114,9 +116,5 @@ internal sealed partial class NavigationService : INavigationService
         }
     }
 
-    private static bool RequiresParameter(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] Type viewModelType) =>
-        !typeof(INavigatedTo).IsAssignableFrom(viewModelType)
-        && viewModelType.GetInterfaces().Any(static contract =>
-            contract.IsGenericType && contract.GetGenericTypeDefinition() == typeof(INavigatedTo<>));
+    public ViewModelScopes Scopes { get; }
 }

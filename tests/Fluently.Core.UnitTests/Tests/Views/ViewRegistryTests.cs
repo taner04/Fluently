@@ -6,6 +6,8 @@ namespace Fluently.Core.UnitTests.Tests.Views;
 // The registry is static, so every test uses view models no other test registers.
 public sealed class ViewRegistryTests : IDisposable
 {
+    private readonly ViewProvider _provider = new(new ViewModelScopes(null));
+
     private readonly ServiceProvider _serviceProvider = new ServiceCollection()
         .AddScoped<Greeting>()
         .AddTransient<GreetedPage>()
@@ -14,46 +16,48 @@ public sealed class ViewRegistryTests : IDisposable
     public void Dispose() => _serviceProvider.Dispose();
 
     [Fact]
-    public void TryCreateView_Should_CreateRegisteredView()
+    public void GetView_Should_CreateRegisteredView()
     {
         ViewRegistry.Add<CreatedViewModel>(static (_, viewModel) => new CreatedView(viewModel));
         var viewModel = new CreatedViewModel();
 
-        var created = ViewRegistry.TryCreateView(viewModel, out var view);
+        var view = _provider.GetView(viewModel);
 
-        created.Should().BeTrue();
-        ViewRegistry.Contains(typeof(CreatedViewModel)).Should().BeTrue();
+        _provider.CanProvide(viewModel).Should().BeTrue();
         view.Should().BeOfType<CreatedView>().Which.ViewModel.Should().BeSameAs(viewModel);
     }
 
     [Fact]
-    public void TryCreateView_Should_ReturnFalse_When_ViewModelHasNoView()
+    public void GetView_Should_Throw_When_ViewModelHasNoView()
     {
-        var created = ViewRegistry.TryCreateView(new UnregisteredViewModel(), out var view);
+        var viewModel = new UnregisteredViewModel();
 
-        created.Should().BeFalse();
-        view.Should().BeNull();
+        var get = () => _provider.GetView(viewModel);
+
+        _provider.CanProvide(viewModel).Should().BeFalse();
+        get.Should().Throw<InvalidOperationException>().WithMessage("*UnregisteredViewModel*");
     }
 
     [Fact]
     public void Add_Should_Throw_When_ViewModelAlreadyHasView()
     {
-        ViewRegistry.Add<DuplicateViewModel>(static (_, viewModel) => viewModel);
+        ViewRegistry.Add<DuplicateViewModel>(static (_, viewModel) => new DuplicateView(viewModel));
 
-        var add = () => ViewRegistry.Add<DuplicateViewModel>(static (_, viewModel) => viewModel);
+        var add = () => ViewRegistry.Add<DuplicateViewModel>(static (_, viewModel) => new DuplicateView(viewModel));
 
         add.Should().Throw<InvalidOperationException>();
     }
 
     [Fact]
-    public async Task TryCreateView_Should_UsePageScope_When_PageWasNavigatedTo()
+    public async Task GetView_Should_UsePageScope_When_PageWasNavigatedTo()
     {
-        ViewRegistry.Add<GreetedPage>(static (services, page) => new GreetedView(page, services.GetRequiredService<Greeting>()));
-        using var navigation = new NavigationService(_serviceProvider, NullLogger<NavigationService>.Instance);
+        ViewRegistry.Add<GreetedPage>(static (services, page) =>
+            new GreetedView(page, services.GetRequiredService<Greeting>()));
+        await using var navigation = new NavigationService(_serviceProvider, NullLogger<NavigationService>.Instance);
         await navigation.NavigateToAsync<GreetedPage>(TestContext.Current.CancellationToken);
         var page = (GreetedPage)navigation.CurrentPage!;
 
-        ViewRegistry.TryCreateView(page, out var view);
+        var view = new ViewProvider(navigation.Scopes).GetView(page);
 
         view.Should().BeOfType<GreetedView>().Which.Greeting.Should().BeSameAs(page.Greeting);
     }
@@ -61,14 +65,14 @@ public sealed class ViewRegistryTests : IDisposable
     [Fact]
     public async Task For_Should_ForgetPageScope_When_PageLeftHistory()
     {
-        using var navigation = new NavigationService(_serviceProvider, NullLogger<NavigationService>.Instance);
+        var navigation = new NavigationService(_serviceProvider, NullLogger<NavigationService>.Instance);
         await navigation.NavigateToAsync<GreetedPage>(TestContext.Current.CancellationToken);
         var page = navigation.CurrentPage!;
-        var scope = ViewModelServices.For(page);
+        var scope = navigation.Scopes.For(page);
 
-        navigation.Dispose();
+        await navigation.DisposeAsync();
 
         scope.Should().NotBeNull().And.NotBeSameAs(_serviceProvider);
-        ViewModelServices.For(page).Should().NotBeSameAs(scope);
+        navigation.Scopes.For(page).Should().BeSameAs(_serviceProvider);
     }
 }
