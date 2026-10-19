@@ -5,7 +5,7 @@
         <RootNamespace>Fluently</RootNamespace>
         <Description>UI-neutral core of Fluently: async, view-model-first navigation with typed parameters, guards and rollback, dialogs that return a result, toasts, and source-generated view registration.</Description>
         <PackageTags>mvvm;navigation;avalonia</PackageTags>
-        <PackageValidationBaselineVersion>0.2.1</PackageValidationBaselineVersion>
+        <PackageValidationBaselineVersion>0.3.0</PackageValidationBaselineVersion>
     </PropertyGroup>
 
     <ItemGroup>
