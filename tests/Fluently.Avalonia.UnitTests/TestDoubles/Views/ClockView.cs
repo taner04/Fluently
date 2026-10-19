@@ -1,10 +1,6 @@
-using Avalonia.Controls;
-
 namespace Fluently.Avalonia.UnitTests.TestDoubles.Views;
 
-public sealed class ClockView(ClockViewModel viewModel, Clock clock) : UserControl, IViewFor<ClockViewModel>
+public sealed class ClockView(ClockViewModel viewModel, Clock clock) : ViewFor<ClockViewModel>(viewModel)
 {
-    public ClockViewModel ViewModel { get; } = viewModel;
-
     public Clock Clock { get; } = clock;
 }

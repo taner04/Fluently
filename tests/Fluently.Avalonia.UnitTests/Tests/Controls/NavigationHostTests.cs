@@ -1,4 +1,3 @@
-using Avalonia.Controls;
 using Fluently.Avalonia.UnitTests.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +8,10 @@ public sealed class NavigationHostTests : TestBase, IDisposable
     private readonly INavigationService _navigation;
     private readonly ServiceProvider _serviceProvider = Services.Create();
 
-    public NavigationHostTests() => _navigation = _serviceProvider.GetRequiredService<INavigationService>();
+    public NavigationHostTests()
+    {
+        _navigation = _serviceProvider.GetRequiredService<INavigationService>();
+    }
 
     public void Dispose() => _serviceProvider.Dispose();
 
@@ -20,9 +22,9 @@ public sealed class NavigationHostTests : TestBase, IDisposable
             await _navigation.NavigateToAsync<HomeViewModel>(CurrentCancellationToken);
             var host = new NavigationHost { Navigation = _navigation };
 
-            Show(host);
+            TestWindow.Show(host);
 
-            host.Content.Should().BeOfType<HomeViewModel>();
+            host.Content.Should().BeOfType<HomeView>();
         });
 
     [Fact]
@@ -30,16 +32,16 @@ public sealed class NavigationHostTests : TestBase, IDisposable
         UiThread.RunAsync(async () =>
         {
             var host = new NavigationHost { Navigation = _navigation };
-            Show(host);
+            TestWindow.Show(host);
 
             await _navigation.NavigateToAsync<HomeViewModel>(CurrentCancellationToken);
-            host.Content.Should().BeOfType<HomeViewModel>();
+            host.Content.Should().BeOfType<HomeView>();
 
             await _navigation.NavigateToAsync<DetailsViewModel>(CurrentCancellationToken);
-            host.Content.Should().BeOfType<DetailsViewModel>();
+            host.Content.Should().BeOfType<DetailsView>();
 
             await _navigation.GoBackAsync(CurrentCancellationToken);
-            host.Content.Should().BeOfType<HomeViewModel>();
+            host.Content.Should().BeOfType<HomeView>();
         });
 
     [Fact]
@@ -47,7 +49,7 @@ public sealed class NavigationHostTests : TestBase, IDisposable
         UiThread.RunAsync(async () =>
         {
             var host = new NavigationHost { Navigation = _navigation };
-            var window = Show(host);
+            var window = TestWindow.Show(host);
             window.Close();
 
             await _navigation.NavigateToAsync<HomeViewModel>(CurrentCancellationToken);
@@ -59,21 +61,14 @@ public sealed class NavigationHostTests : TestBase, IDisposable
     public Task NavigationHost_Should_SwitchService_When_NavigationChanges() =>
         UiThread.RunAsync(async () =>
         {
-            using var other = _serviceProvider.GetRequiredService<INavigationServiceFactory>().Create();
+            await using var other = _serviceProvider.GetRequiredService<INavigationServiceFactory>().Create();
             await other.NavigateToAsync<DetailsViewModel>(CurrentCancellationToken);
             var host = new NavigationHost { Navigation = _navigation };
-            Show(host);
+            TestWindow.Show(host);
 
             host.Navigation = other;
             await _navigation.NavigateToAsync<HomeViewModel>(CurrentCancellationToken);
 
-            host.Content.Should().BeOfType<DetailsViewModel>();
+            host.Content.Should().BeOfType<DetailsView>();
         });
-
-    private static Window Show(NavigationHost host)
-    {
-        var window = new Window { Content = host };
-        window.Show();
-        return window;
-    }
 }
