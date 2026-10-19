@@ -475,6 +475,14 @@ public class NavigationPane : Control
         {
             ArrangeContainer(container);
         }
+
+        foreach (var button in new[] { _back, _toggle, _searchButton })
+        {
+            StyleDefaults.Set(
+                button,
+                HorizontalAlignmentProperty,
+                IsPaneOpen ? HorizontalAlignment.Left : HorizontalAlignment.Center);
+        }
     }
 
     private async void OnItemSelected(object? sender, SelectionChangedEventArgs e)

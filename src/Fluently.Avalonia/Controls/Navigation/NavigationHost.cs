@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
 
 namespace Fluently;
 
@@ -71,7 +72,21 @@ public class NavigationHost : TransitioningContentControl
     private void Followed(INavigationService? navigation)
     {
         _views.Scopes = (navigation as IViewSource)?.Scopes;
-        Content = HostViews.For(navigation, navigation?.CurrentPage);
+        if (navigation is null)
+        {
+            ClearWithoutTransition();
+            return;
+        }
+
+        Content = HostViews.For(navigation, navigation.CurrentPage);
+    }
+
+    private void ClearWithoutTransition()
+    {
+        using (SetValue(PageTransitionProperty, null, BindingPriority.Animation))
+        {
+            Content = null;
+        }
     }
 
     private void OnNavigated(object? sender, NavigatedEventArgs e) =>

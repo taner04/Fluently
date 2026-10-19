@@ -354,6 +354,21 @@ public sealed class NavigationPaneTests : TestBase, IDisposable
         });
 
     [Fact]
+    public Task NavigationPane_Should_CenterButtons_When_Collapsed() =>
+        UiThread.Run(() =>
+        {
+            CreateItems();
+            var pane = new NavigationPane { Navigation = _navigation, CompactPaneLength = 64, IsPaneOpen = false, Items = { _home } };
+            TestWindow.Show(pane);
+            Dispatcher.UIThread.RunJobs();
+
+            var toggle = PaneButton(pane, "navigation-toggle");
+            var center = toggle.TranslatePoint(new Point(toggle.Bounds.Width / 2, 0), pane)!.Value.X;
+
+            center.Should().BeApproximately(32, 0.5);
+        });
+
+    [Fact]
     public Task NavigationPane_Should_ShowContentNextToPane() =>
         UiThread.Run(() =>
         {

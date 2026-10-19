@@ -1,3 +1,6 @@
+using Avalonia.Controls;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using Fluently.Avalonia.UnitTests.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -70,5 +73,29 @@ public sealed class NavigationHostTests : TestBase, IDisposable
             await _navigation.NavigateToAsync<HomeViewModel>(CurrentCancellationToken);
 
             host.Content.Should().BeOfType<DetailsView>();
+        });
+
+    [Fact]
+    public Task NavigationHost_Should_ReleaseItsView_When_Detached() =>
+        UiThread.RunAsync(async () =>
+        {
+            await _navigation.NavigateToAsync<HomeViewModel>(CurrentCancellationToken);
+            var transition = new global::Avalonia.Animation.CrossFade(TimeSpan.FromSeconds(1));
+            var first = new NavigationHost { Navigation = _navigation, PageTransition = transition };
+            var parent = new Border { Child = first };
+            var window = TestWindow.Show(parent);
+            window.UpdateLayout();
+            var view = first.Content;
+
+            parent.Child = null;
+            window.UpdateLayout();
+            var second = new NavigationHost { Navigation = _navigation, PageTransition = transition };
+            parent.Child = second;
+            window.UpdateLayout();
+            Dispatcher.UIThread.RunJobs();
+            window.UpdateLayout();
+
+            second.Content.Should().BeSameAs(view);
+            second.GetVisualDescendants().OfType<HomeView>().Should().ContainSingle();
         });
 }

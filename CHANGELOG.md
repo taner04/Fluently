@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.3.0-preview.2] - 2026-10-19
+
+### Fixed
+
+- A `NavigationHost` that is removed from the window, for example inside a page that is left, releases its page view at once instead of keeping it in its page transition. A view of the same page shown again by another host no longer throws "already has a visual parent"
+- The back, menu and search buttons of a collapsed `NavigationPane` are centered, also with a wider `CompactPaneLength`
+
 ## [0.3.0-preview.1] - 2026-10-19
 
 ### Breaking changes
@@ -97,7 +104,8 @@ First release of `Fluently.Core`.
 - `AddFluently()` to register the services
 - Generic `NavigateToAsync<T>()` overloads
 
-[Unreleased]: https://github.com/taner04/Fluently/compare/v0.3.0-preview.1...HEAD
+[Unreleased]: https://github.com/taner04/Fluently/compare/v0.3.0-preview.2...HEAD
+[0.3.0-preview.2]: https://github.com/taner04/Fluently/compare/v0.3.0-preview.1...v0.3.0-preview.2
 [0.3.0-preview.1]: https://github.com/taner04/Fluently/compare/v0.2.2...v0.3.0-preview.1
 [0.2.2]: https://github.com/taner04/Fluently/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/taner04/Fluently/compare/v0.2.0...v0.2.1
