@@ -4,7 +4,7 @@
              x:Class="Fluently.Gallery.Controls.PageHeader"
              x:DataType="controls:PageHeader"
              x:Name="Header">
-    <StackPanel Spacing="6">
+    <StackPanel Spacing="8">
         <TextBlock Text="{Binding #Header.Title}" Classes="title" />
         <TextBlock Text="{Binding #Header.Description}" Classes="subtitle"
                    IsVisible="{Binding #Header.Description, Converter={x:Static ObjectConverters.IsNotNull}}" />

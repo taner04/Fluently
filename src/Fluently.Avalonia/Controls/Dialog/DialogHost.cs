@@ -2,7 +2,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
-using Avalonia.Media.Immutable;
 using Avalonia.Threading;
 using System.ComponentModel;
 
@@ -34,9 +33,7 @@ public class DialogHost : OverlayHost
     ///     Defines the <see cref="Backdrop" /> property.
     /// </summary>
     public static readonly StyledProperty<IBrush?> BackdropProperty =
-        AvaloniaProperty.Register<DialogHost, IBrush?>(
-            nameof(Backdrop),
-            new ImmutableSolidColorBrush(Color.FromArgb(0x66, 0x00, 0x00, 0x00)));
+        AvaloniaProperty.Register<DialogHost, IBrush?>(nameof(Backdrop));
 
     /// <summary>
     ///     Defines the <see cref="DismissOnBackdropClick" /> property.
@@ -64,7 +61,8 @@ public class DialogHost : OverlayHost
     }
 
     /// <summary>
-    ///     The brush that covers everything below a dialog. Defaults to a translucent black.
+    ///     The brush that covers everything below a dialog. Defaults to <see langword="null" />: transparent, and the
+    ///     dialog stays modal.
     /// </summary>
     public IBrush? Backdrop
     {

@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Headless;
 using Avalonia.Input;
 using Avalonia.LogicalTree;
@@ -38,6 +39,19 @@ public sealed class DialogHostTests : TestBase, IDisposable
                 .Which.Content.Should().BeOfType<ConfirmDialogView>().Which.ViewModel.Should()
                 .BeSameAs(_dialogs.CurrentDialog);
             host.GetVisualDescendants().OfType<ConfirmDialogView>().Should().ContainSingle();
+        });
+
+    [Fact]
+    public Task DialogHost_Should_NotClipDialog_When_DialogOpens() =>
+        UiThread.Run(() =>
+        {
+            var host = new DialogHost { Dialogs = _dialogs };
+            TestWindow.Show(host, 400, 300);
+
+            _ = _dialogs.ShowAsync<ConfirmDialogViewModel, bool>(CurrentCancellationToken);
+            Dispatcher.UIThread.RunJobs();
+
+            Presenters(host).Should().ContainSingle().Which.ClipToBounds.Should().BeFalse();
         });
 
     [Fact]
@@ -225,9 +239,9 @@ public sealed class DialogHostTests : TestBase, IDisposable
             focused.FindAncestorOfType<DialogLayer>(true)!.Dialog.Should().BeOfType<GuardedDialogViewModel>();
         });
 
-    private static List<ContentControl> Presenters(DialogHost host) =>
+    private static List<ContentPresenter> Presenters(DialogHost host) =>
     [
-        .. host.GetLogicalDescendants().OfType<ContentControl>()
+        .. host.GetVisualDescendants().OfType<ContentPresenter>()
             .Where(static presenter => presenter.Classes.Contains("dialog"))
     ];
 

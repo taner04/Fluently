@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-28
+
+### Breaking changes
+
+- `ToastHost` no longer has a built-in card for `Toast`. Fluently.Avalonia ships hosts without a look of their own: write a view for `Toast`, such as `ViewFor<Toast>`, to show it
+- `DialogHost.Backdrop` is `null`, so transparent and still modal, until you set it; it was a translucent black
+
+### Fixed
+
+- A shadow on a dialog's view is no longer cut off: the dialog's presenter is a `ContentPresenter`, which does not clip to its bounds, instead of a `ContentControl`. Styles that select `ContentControl.dialog` select `ContentPresenter.dialog` now
+
 ### Added
 
 - `IThemeService` switches the app between the light and the dark theme, or lets it follow the operating system. `Theme` can be set from any thread, `ActualTheme` is the theme the app is shown in, and both raise `PropertyChanged`
@@ -12,7 +23,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- The gallery's settings page switches the theme with `IThemeService`
+- Toasts move more smoothly: slide and fade start and finish together, a toast shown again while it leaves turns
+  around from where it is, and a leaving toast frees its room right away, so the others close the gap while it fades
+  out
+- The gallery's settings page switches the theme with `IThemeService`, and the gallery shows its toasts with a view
+  of its own for `Toast`
 
 ## [0.3.0] - 2026-10-19
 
@@ -106,7 +121,8 @@ First release of `Fluently.Core`.
 - `AddFluently()` to register the services
 - Generic `NavigateToAsync<T>()` overloads
 
-[Unreleased]: https://github.com/taner04/Fluently/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/taner04/Fluently/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/taner04/Fluently/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/taner04/Fluently/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/taner04/Fluently/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/taner04/Fluently/compare/v0.2.0...v0.2.1

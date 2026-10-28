@@ -14,7 +14,7 @@
                               CSharp="{x:Static snippets:CodeSnippets.ConfirmDialog}"
                               Xaml="{x:Static snippets:CodeSnippets.DialogHost}">
             <controls:ExampleCard.Example>
-                <StackPanel Orientation="Horizontal" Spacing="16">
+                <StackPanel Orientation="Horizontal" Spacing="12">
                     <Button Content="Show" Command="{Binding ConfirmCommand}" Classes="accent" />
                     <TextBlock Text="{Binding LastResult}" Classes="caption" VerticalAlignment="Center" />
                 </StackPanel>
@@ -25,7 +25,7 @@
                               Description="A dialog that returns a string. Type something, then press Escape: it asks with a second dialog on top."
                               CSharp="{x:Static snippets:CodeSnippets.InputDialog}">
             <controls:ExampleCard.Example>
-                <StackPanel Orientation="Horizontal" Spacing="16">
+                <StackPanel Orientation="Horizontal" Spacing="12">
                     <Button Content="Show" Command="{Binding RenameCommand}" Classes="accent" />
                     <TextBlock Text="{Binding LastResult}" Classes="caption" VerticalAlignment="Center" />
                 </StackPanel>

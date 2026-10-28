@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Input;
 using Avalonia.Layout;
 
@@ -18,7 +19,7 @@ internal sealed class DialogLayer : Panel
         KeyboardNavigation.SetTabNavigation(this, KeyboardNavigationMode.Cycle);
 
         Backdrop.Classes.Add("dialog-backdrop");
-        Presenter = new ContentControl
+        Presenter = new ContentPresenter
         {
             Content = content,
             HorizontalAlignment = HorizontalAlignment.Center,
@@ -36,5 +37,5 @@ internal sealed class DialogLayer : Panel
 
     public Border Backdrop { get; } = new();
 
-    public ContentControl Presenter { get; }
+    public ContentPresenter Presenter { get; }
 }

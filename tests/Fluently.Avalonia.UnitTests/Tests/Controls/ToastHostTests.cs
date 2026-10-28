@@ -1,10 +1,5 @@
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using Avalonia.Layout;
-using Avalonia.LogicalTree;
-using Avalonia.Media;
-using Avalonia.Media.Immutable;
-using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Fluently.Avalonia.UnitTests.Infrastructure;
@@ -14,7 +9,8 @@ namespace Fluently.Avalonia.UnitTests.Tests.Controls;
 
 public sealed class ToastHostTests : TestBase, IDisposable
 {
-    private readonly ServiceProvider _serviceProvider = Services.Create();
+    private readonly ServiceProvider _serviceProvider =
+        Services.Create(static services => services.AddSingleton<IViewProvider, BrandedViewProvider>());
     private readonly IToastService _toasts;
 
     public ToastHostTests()
@@ -36,10 +32,9 @@ public sealed class ToastHostTests : TestBase, IDisposable
             Dispatcher.UIThread.RunJobs();
 
             content.GetVisualParent().Should().NotBeNull();
-            var view = ToastViews(host).Should().ContainSingle().Subject;
-            view.Classes.Should().Contain("success");
-            view.GetVisualDescendants().OfType<TextBlock>().Select(static text => text.Text)
-                .Should().Contain(["Saved", "Your changes were saved."]);
+            ToastViews(host).Should().ContainSingle()
+                .Which.ViewModel.Should().BeOfType<Toast>()
+                .Which.Should().BeEquivalentTo(new { Title = "Saved", Severity = ToastSeverity.Success });
         });
 
     [Fact]
@@ -88,44 +83,6 @@ public sealed class ToastHostTests : TestBase, IDisposable
         });
 
     [Fact]
-    public Task ToastHost_Should_LetAppStylesOverrideBuiltInLook() =>
-        UiThread.Run(() =>
-        {
-            var red = new ImmutableSolidColorBrush(Colors.Red);
-            var host = new ToastHost { Toasts = _toasts };
-            var window = TestWindow.Show(host);
-            window.Styles.Add(new Style(static selector => selector.Is<Border>().Class("toast"))
-            {
-                Setters = { new Setter(Layoutable.WidthProperty, 500d) }
-            });
-            window.Styles.Add(new Style(static selector => selector.Is<Border>().Class("toast-tint"))
-            {
-                Setters = { new Setter(Border.BackgroundProperty, red) }
-            });
-
-            _toasts.Show("Saved", "");
-            Dispatcher.UIThread.RunJobs();
-
-            var view = ToastViews(host).Single();
-            view.Width.Should().Be(500);
-            view.GetVisualDescendants().OfType<Border>().Single(static border => border.Classes.Contains("toast-tint"))
-                .Background.Should().BeSameAs(red);
-        });
-
-    [Fact]
-    public Task ToastHost_Should_UseBuiltInLook_When_AppHasNoStyles() =>
-        UiThread.Run(() =>
-        {
-            var host = new ToastHost { Toasts = _toasts };
-            TestWindow.Show(host);
-
-            _toasts.Show("Saved", "");
-            Dispatcher.UIThread.RunJobs();
-
-            ToastViews(host).Single().Width.Should().Be(400);
-        });
-
-    [Fact]
     public Task ToastHost_Should_ShowNewestToastFirst() =>
         UiThread.Run(() =>
         {
@@ -136,24 +93,7 @@ public sealed class ToastHostTests : TestBase, IDisposable
             _toasts.Show("Second", "");
             Dispatcher.UIThread.RunJobs();
 
-            ToastViews(host).Select(static view => view.Toast.Title).Should().Equal("Second", "First");
-        });
-
-    [Fact]
-    public Task ToastHost_Should_DismissToast_When_CloseButtonIsClicked() =>
-        UiThread.RunAsync(async () =>
-        {
-            var host = new ToastHost { Toasts = _toasts };
-            TestWindow.Show(host);
-            _toasts.Show("Saved", "");
-            Dispatcher.UIThread.RunJobs();
-
-            var close = ToastViews(host).Single().GetVisualDescendants().OfType<Button>().Single();
-            close.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-            await WaitUntilAsync(() => ToastViews(host).Count == 0);
-
-            _toasts.Toasts.Should().BeEmpty();
-            ToastViews(host).Should().BeEmpty();
+            ToastViews(host).Select(static view => ((Toast)view.ViewModel).Title).Should().Equal("Second", "First");
         });
 
     [Fact]
@@ -231,7 +171,7 @@ public sealed class ToastHostTests : TestBase, IDisposable
             _toasts.Show("Saved", "");
             Dispatcher.UIThread.RunJobs();
 
-            host.GetLogicalDescendants().OfType<ToastView>().Should().BeEmpty();
+            ToastViews(host).Should().BeEmpty();
         });
 
     [Fact]
@@ -329,6 +269,28 @@ public sealed class ToastHostTests : TestBase, IDisposable
         });
 
     [Fact]
+    public Task ToastHost_Should_CloseGap_When_ToastStartsLeaving() =>
+        UiThread.Run(() =>
+        {
+            _toasts.Position = ToastPosition.BottomRight;
+            var host = new ToastHost { Toasts = _toasts };
+            TestWindow.Show(host);
+            _toasts.Show("First", "");
+            var second = _toasts.Show("Second", "");
+            Dispatcher.UIThread.RunJobs();
+
+            _toasts.Dismiss(second);
+            Dispatcher.UIThread.RunJobs();
+
+            var items = host.GetVisualDescendants().OfType<ToastItem>().ToList();
+            var leaving = items.Single(static item => ((Toast)item.Toast).Title == "Second");
+            var first = items.Single(static item => ((Toast)item.Toast).Title == "First");
+            leaving.IsLeaving.Should().BeTrue();
+            first.Bounds.Bottom.Should().BeApproximately(Panel(host).Bounds.Height, 0.5);
+            Panel(host).Bounds.Height.Should().BeApproximately(first.Bounds.Height, 0.5);
+        });
+
+    [Fact]
     public Task ToastHost_Should_MoveToasts_When_PositionChanges() =>
         UiThread.Run(() =>
         {
@@ -344,6 +306,6 @@ public sealed class ToastHostTests : TestBase, IDisposable
 
     private static ToastPanel Panel(ToastHost host) => host.GetVisualDescendants().OfType<ToastPanel>().Single();
 
-    private static List<ToastView> ToastViews(ToastHost host) =>
-        [.. host.GetVisualDescendants().OfType<ToastView>()];
+    private static List<BrandedToastView> ToastViews(ToastHost host) =>
+        [.. host.GetVisualDescendants().OfType<BrandedToastView>()];
 }

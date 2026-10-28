@@ -31,7 +31,8 @@ Requires .NET 8 or later; the package targets `net8.0` and `net10.0`.
 - **Nested navigation**: `INavigationServiceFactory` creates independent services with their own history
 - **Dialogs**: `IDialogService` shows `IDialog<TResult>` view models and returns their result; dialogs stack, get their
   own scope, and can refuse being dismissed
-- **Toasts**: `IToastService` shows short notifications that close by themselves, built-in or with a view of your own
+- **Toasts**: `IToastService` shows short notifications that close by themselves, with a title and a message or
+  with content of your own
 - **Theme switching**: `IThemeService` switches between light, dark and the system theme, bindable and from any thread
 - **Generated registration**: views and view models are registered by a source generator, without reflection
 
@@ -57,8 +58,7 @@ services.AddViewModels();
 `[TransientPage]`, `[ScopedPage]`, `[Dialog]` or `[Toast]`. The
 [source generator README](https://github.com/taner04/Fluently/blob/main/src/Fluently.SourceGenerator/README.md)
 describes the attributes, the generated code and the compiler errors it reports. Registering view models by hand works
-as
-well.
+as well.
 
 `AddFluently()` registers a singleton `INavigationService`, an `INavigationServiceFactory`, a singleton
 `IDialogService`, a singleton `IToastService`, the default `IViewProvider` and, unless you registered one,
@@ -207,6 +207,8 @@ toasts.ShowError("Upload failed", "The server could not be reached.");
 toasts.ShowWarning("Offline", "Reconnecting…", Timeout.InfiniteTimeSpan);
 toasts.Show("Saved", "Your changes were saved.", ToastSeverity.Success);
 ```
+
+Your UI framework shows a `Toast` with the view you write for it, for example `ViewFor<Toast>` in Fluently.Avalonia.
 
 For a toast with its own content, such as an Undo button, derive from `ToastViewModel`; your UI framework shows it
 with its view, and `Dismiss()` closes it early:

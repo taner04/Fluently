@@ -4,10 +4,10 @@
              x:Class="Fluently.Gallery.Controls.ExampleCard"
              x:DataType="controls:ExampleCard"
              x:Name="Card">
-    <StackPanel Spacing="10">
-        <StackPanel Spacing="2">
+    <StackPanel Spacing="12">
+        <StackPanel Spacing="4">
             <TextBlock Text="{Binding #Card.Title}" Classes="heading" />
-            <TextBlock Text="{Binding #Card.Description}" Classes="caption"
+            <TextBlock Text="{Binding #Card.Description}" Classes="body"
                        IsVisible="{Binding #Card.Description, Converter={x:Static ObjectConverters.IsNotNull}}" />
         </StackPanel>
         <StackPanel>

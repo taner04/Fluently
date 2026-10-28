@@ -2,30 +2,34 @@ using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
+using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
 
 namespace Fluently;
 
 /// <summary>
-///     Wraps one toast and moves it the way Fluent moves notifications: it slides in from its edge with the decelerating
-///     curve while fading in gently, slides back out with the accelerating curve, which is shorter, and glides to its new
-///     place when other toasts come or go.
+///     Wraps one toast and moves it the way Fluent moves notifications: it slides in from its edge while fading in, slides
+///     back out while fading out, and glides to its new place when other toasts come or go. Slide and fade follow one
+///     progress value, so they always start and finish together, and a toast that comes back while leaving turns around
+///     from where it is.
 /// </summary>
 internal sealed class ToastItem : Decorator
 {
-    private static readonly TimeSpan EnterDuration = TimeSpan.FromMilliseconds(400);
-    private static readonly TimeSpan FadeInDuration = TimeSpan.FromMilliseconds(500);
-    private static readonly TimeSpan ExitDuration = TimeSpan.FromMilliseconds(167);
-    private static readonly TimeSpan MoveDuration = TimeSpan.FromMilliseconds(250);
+    private static readonly StyledProperty<double> PresenceProperty =
+        AvaloniaProperty.Register<ToastItem, double>("Presence");
 
-    private static readonly Easing Decelerate = new SplineEasing(0, 0, 0);
-    private static readonly Easing Accelerate = new SplineEasing(0.7, 0, 1, 0.5);
-    private static readonly Easing EasyEase = new SplineEasing(0.33, 0, 0.67);
+    private static readonly TimeSpan EnterDuration = TimeSpan.FromMilliseconds(367);
+    private static readonly TimeSpan ExitDuration = TimeSpan.FromMilliseconds(250);
+    private static readonly TimeSpan MoveDuration = TimeSpan.FromMilliseconds(367);
+
+    private static readonly Easing Decelerate = new SplineEasing(0.1, 0.9, 0.2);
+    private static readonly Easing Accelerate = new SplineEasing(0.4, 0, 1);
 
     private readonly TranslateTransform _move = new();
+    private readonly DoubleTransition _presence = new() { Property = PresenceProperty };
     private readonly Vector _slideFrom;
-    private readonly TranslateTransform _transform;
+    private readonly TranslateTransform _slide = new();
     private int _exit;
     private bool _hasEntered;
 
@@ -37,14 +41,13 @@ internal sealed class ToastItem : Decorator
         Toast = toast;
         Child = content;
         _slideFrom = slideFrom;
-        _transform = new TranslateTransform { X = slideFrom.X, Y = slideFrom.Y };
-        Opacity = 0;
-        RenderTransform = new TransformGroup { Children = { _transform, _move } };
+        RenderTransform = new TransformGroup { Children = { _slide, _move } };
+        ApplyPresence(0);
+        Transitions = [_presence];
         _move.Transitions =
         [
             new DoubleTransition { Property = TranslateTransform.YProperty, Duration = MoveDuration, Easing = Decelerate }
         ];
-        Animate(EnterDuration, Decelerate, FadeInDuration, EasyEase);
     }
 
     public IToast Toast { get; }
@@ -56,12 +59,8 @@ internal sealed class ToastItem : Decorator
     /// </summary>
     public void Return()
     {
-        IsLeaving = false;
-        IsHitTestVisible = true;
-        Animate(EnterDuration, Decelerate, FadeInDuration, EasyEase);
-        _transform.X = 0;
-        _transform.Y = 0;
-        Opacity = 1;
+        SetLeaving(false);
+        AnimatePresence(1, EnterDuration, Decelerate);
     }
 
     /// <summary>
@@ -71,12 +70,8 @@ internal sealed class ToastItem : Decorator
     public async Task<bool> LeaveAsync()
     {
         var exit = ++_exit;
-        IsLeaving = true;
-        IsHitTestVisible = false;
-        Animate(ExitDuration, Accelerate, ExitDuration, Accelerate);
-        _transform.X = _slideFrom.X;
-        _transform.Y = _slideFrom.Y;
-        Opacity = 0;
+        SetLeaving(true);
+        AnimatePresence(0, ExitDuration, Accelerate);
         await Task.Delay(ExitDuration);
         return IsLeaving && exit == _exit;
     }
@@ -85,7 +80,7 @@ internal sealed class ToastItem : Decorator
     {
         var transitions = _move.Transitions;
         _move.Transitions = null;
-        _move.Y = offset;
+        _move.Y += offset;
         _move.Transitions = transitions;
         Dispatcher.UIThread.Post(() => _move.Y = 0, DispatcherPriority.Background);
     }
@@ -104,23 +99,39 @@ internal sealed class ToastItem : Decorator
         {
             if (!IsLeaving)
             {
-                _transform.X = 0;
-                _transform.Y = 0;
-                Opacity = 1;
+                AnimatePresence(1, EnterDuration, Decelerate);
             }
         }, DispatcherPriority.Background);
     }
 
-    private void Animate(TimeSpan slideDuration, Easing slideEasing, TimeSpan fadeDuration, Easing fadeEasing)
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
-        _transform.Transitions =
-        [
-            new DoubleTransition
-                { Property = TranslateTransform.XProperty, Duration = slideDuration, Easing = slideEasing },
-            new DoubleTransition
-                { Property = TranslateTransform.YProperty, Duration = slideDuration, Easing = slideEasing }
-        ];
-        Transitions =
-            [new DoubleTransition { Property = OpacityProperty, Duration = fadeDuration, Easing = fadeEasing }];
+        base.OnPropertyChanged(change);
+
+        if (change.Property == PresenceProperty)
+        {
+            ApplyPresence(change.GetNewValue<double>());
+        }
+    }
+
+    private void AnimatePresence(double presence, TimeSpan duration, Easing easing)
+    {
+        _presence.Duration = duration;
+        _presence.Easing = easing;
+        SetValue(PresenceProperty, presence);
+    }
+
+    private void ApplyPresence(double presence)
+    {
+        Opacity = presence;
+        _slide.X = _slideFrom.X * (1 - presence);
+        _slide.Y = _slideFrom.Y * (1 - presence);
+    }
+
+    private void SetLeaving(bool isLeaving)
+    {
+        IsLeaving = isLeaving;
+        IsHitTestVisible = !isLeaving;
+        (Parent as Layoutable)?.InvalidateMeasure();
     }
 }

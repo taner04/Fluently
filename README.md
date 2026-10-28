@@ -196,7 +196,7 @@ if (result is { IsCompleted: true, Value: true })
 | Read | For |
 |---|---|
 | [`Fluently.Core`](src/Fluently.Core/README.md) | Registration and options, pages and their lifecycle, navigation and its behavior, dialogs, toasts, views |
-| [`Fluently.Avalonia`](src/Fluently.Avalonia/README.md) | Views and the view locator, the hosts, the built-in toast, `FluentWindow`, `TitleBar`, `NavigationPane`, using it with FluentAvalonia |
+| [`Fluently.Avalonia`](src/Fluently.Avalonia/README.md) | Views and the view locator, the hosts, `FluentWindow`, `TitleBar`, `NavigationPane`, using it with FluentAvalonia |
 | [`Fluently.SourceGenerator`](src/Fluently.SourceGenerator/README.md) | The registration attributes, the generated code, and the compiler errors `FLUENTLY001` to `FLUENTLY007` |
 | [Changelog](CHANGELOG.md) | What changed in every release |
 

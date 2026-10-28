@@ -8,11 +8,9 @@ namespace Fluently;
 
 /// <summary>
 ///     Shows its <see cref="OverlayHost.Content" /> and, above it at the service's <see cref="IToastService.Position" />,
-///     the
-///     toasts of an <see cref="IToastService" />, the newest nearest the edge. A built-in <see cref="Toast" /> gets a card
-///     with its title, message and a close button, unless the toast service's container has a view for it; any other
-///     <see cref="IToast" /> gets its view from that container. Toasts do not block the content: only the toasts
-///     themselves take input.
+///     the toasts of an <see cref="IToastService" />, the newest nearest the edge. Every toast, a built-in
+///     <see cref="Toast" /> as well, gets its view from the toast service's container; Fluently has no look of its own
+///     for toasts. Toasts do not block the content: only the toasts themselves take input.
 ///     Place it outside a <see cref="DialogHost" /> to show toasts above open dialogs.
 ///     <code>
 /// &lt;fluently:ToastHost Toasts="{Binding Toasts}"&gt;
@@ -203,10 +201,5 @@ public class ToastHost : OverlayHost
         }
     }
 
-    private Control CreateView(IToast toast) =>
-        toast is Toast builtIn && !ViewProviders.For((Following as IViewSource)?.Scopes).CanProvide(builtIn)
-            ? new ToastView(builtIn, () => Dismiss(builtIn))
-            : new ContentPresenter { Content = HostViews.For(Following, toast) };
-
-    private void Dismiss(IToast toast) => Following?.Dismiss(toast);
+    private Control CreateView(IToast toast) => new ContentPresenter { Content = HostViews.For(Following, toast) };
 }

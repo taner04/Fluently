@@ -210,12 +210,25 @@ public static class CodeSnippets
                 <fluently:NavigationHost Navigation="{Binding Navigation}" />
             </fluently:DialogHost>
         </fluently:ToastHost>
+
+        <!-- ToastView.axaml: the look of a Toast, with a code-behind deriving from ViewFor<Toast> -->
+        <UserControl xmlns:fluently="using:Fluently"
+                     x:Class="MyApp.Views.ToastView"
+                     x:DataType="fluently:Toast">
+            <Border Classes="toast">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+        </UserControl>
         """;
 
     public const string DialogHost =
         """
         <!-- MainWindow.axaml -->
-        <fluently:DialogHost Dialogs="{Binding Dialogs}" DismissOnBackdropClick="True">
+        <fluently:DialogHost Dialogs="{Binding Dialogs}" DismissOnBackdropClick="True"
+                             Backdrop="{DynamicResource SmokeFillColorDefaultBrush}">
             <fluently:NavigationHost Navigation="{Binding Navigation}" />
         </fluently:DialogHost>
         """;

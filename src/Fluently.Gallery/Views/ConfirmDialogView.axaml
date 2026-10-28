@@ -4,16 +4,16 @@
              x:Class="Fluently.Gallery.Views.ConfirmDialogView"
              x:DataType="vm:ConfirmDialogViewModel">
     <Border Classes="dialog">
-        <StackPanel Spacing="20">
-            <StackPanel Spacing="8">
-                <TextBlock Text="{Binding Request.Title}" Classes="heading" FontSize="20" />
+        <StackPanel Spacing="24">
+            <StackPanel Spacing="12">
+                <TextBlock Text="{Binding Request.Title}" Classes="subtitle-heading" />
                 <TextBlock Text="{Binding Request.Message}" Classes="subtitle" />
             </StackPanel>
-            <UniformGrid Columns="2">
+            <UniformGrid Columns="2" ColumnSpacing="8">
                 <Button Content="{Binding Request.ConfirmText}" Command="{Binding ConfirmCommand}" Classes="accent"
-                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,0,4,0" />
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
                 <Button Content="Cancel" Command="{Binding CancelCommand}"
-                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="4,0,0,0" />
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
             </UniformGrid>
         </StackPanel>
     </Border>

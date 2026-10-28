@@ -52,6 +52,5 @@ public sealed class ViewProviderTests : TestBase, IDisposable
             Dispatcher.UIThread.RunJobs();
 
             host.GetVisualDescendants().OfType<BrandedToastView>().Should().ContainSingle();
-            host.GetVisualDescendants().OfType<ToastView>().Should().BeEmpty();
         });
 }

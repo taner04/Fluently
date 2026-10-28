@@ -93,15 +93,22 @@ Wrap your content in a `DialogHost` to show the open dialogs of an `IDialogServi
 </fluently:DialogHost>
 ```
 
-- Every dialog gets a translucent backdrop that covers everything below it, set with `Backdrop` (transparent when
-  `null`, and still modal), and is centered above it. The dialog's view draws its own surface, such as a `Border` with
-  a background and padding. Style the backdrop with the class `dialog-backdrop` and the dialog's presenter with
-  `dialog`.
+- Every dialog gets a backdrop that covers everything below it and is centered above it. The backdrop is transparent,
+  and still modal, until you set `Backdrop`, for example to a translucent black. The dialog's view draws its own
+  surface, such as a `Border` with a background and padding. Style the backdrop with the class `dialog-backdrop` and
+  the dialog's presenter, a `ContentPresenter`, with `dialog`.
+- Avalonia clips a `UserControl` to its bounds, so a shadow on a dialog's surface is cut off when the surface fills
+  the view. Turn the clipping off for views shown by the hosts:
+
+  ```xml
+  <Style Selector="ContentPresenter.dialog :is(UserControl), fluently|ToastHost :is(UserControl)">
+      <Setter Property="ClipToBounds" Value="False" />
+  </Style>
+  ```
 - Only the top dialog reacts to the keyboard, and Tab stays inside it. Focus moves into a dialog when it opens and back
   when it closes.
 - Escape, and clicking the backdrop when `DismissOnBackdropClick` is set, call `IDialogService.RequestDismissAsync`, so
-  a
-  dialog with a guard can refuse or ask first.
+  a dialog with a guard can refuse or ask first.
 
 ## Toasts
 
@@ -117,14 +124,12 @@ Wrap your content in a `ToastHost`, outside the `DialogHost` so toasts show abov
 
 - The host shows the toasts at `IToastService.Position` and follows it, also while toasts are shown. The newest toast
   is always the one nearest the edge.
-- The built-in `Toast` looks like WinUI's InfoBar: a card tinted in the color of its severity, with its icon and a
-  close button. It uses only resources that Avalonia's Fluent theme and FluentAvalonia both define. Restyle it with the
-  classes `toast` and its severity (`information`, `success`, `warning`, `error`), and its parts `toast-tint`,
-  `toast-icon`, `toast-title`, `toast-message` and `toast-close`. To replace it, write a view for it,
-  `ViewFor<Toast>`; it closes the toast with `IToastService.Dismiss`.
-- Any other `IToast` is shown with its own view.
-- Toasts move like Windows notifications: they slide in from their side, or from their edge when centered, slide back
-  out faster, and the others glide into place.
+- Every toast is shown with its own view; Fluently has no look of its own for toasts. Write a view for the built-in
+  `Toast`, `ViewFor<Toast>`, that shows its `Title`, `Message` and `Severity` and closes it with
+  `IToastService.Dismiss`; any other `IToast` gets its view the same way.
+- Toasts move like Windows notifications: they slide and fade in from their side, or from their edge when centered,
+  and slide and fade back out a little faster. A leaving toast frees its room right away, so the others glide into
+  place while it fades out, and a toast shown again while it leaves turns around from where it is.
 - Toasts do not block the content: only the toasts themselves take clicks.
 
 ## Theme
@@ -178,8 +183,7 @@ public partial class MainWindow : FluentWindow
 ### TitleBar
 
 - Shows a back button for its `Navigation` (the window's unless set), enabled while it can go back, an `Icon`, the
-  window's title (or its own
-  `Title`) and your `Content` on the right.
+  window's title (or its own `Title`) and your `Content` on the right.
 - Leaves room for the system's window buttons, moves the window when dragged, and maximizes or restores it when
   double-clicked.
 - Hides itself while the window shows its own title bar.

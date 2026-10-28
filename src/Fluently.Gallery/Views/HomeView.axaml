@@ -9,7 +9,7 @@
         <Grid RowDefinitions="Auto,Auto">
             <Border Classes="hero" ClipToBounds="True">
                 <Grid>
-                    <StackPanel Margin="40,40,40,0" Spacing="8" MaxWidth="560" HorizontalAlignment="Left">
+                    <StackPanel Margin="40,40,40,0" Spacing="12" MaxWidth="560" HorizontalAlignment="Left">
                         <StackPanel Orientation="Horizontal" Spacing="16">
                             <Image Source="/Assets/logo.png" Width="56" Height="56" />
                             <TextBlock Text="Fluently" FontSize="40" FontWeight="SemiBold" VerticalAlignment="Center" />
@@ -20,47 +20,47 @@
                 </Grid>
             </Border>
 
-            <UniformGrid Grid.Row="1" Columns="4" Margin="24,-84,24,0">
-                <Button Classes="tile" Margin="0,0,6,0" Command="{Binding OpenCommand}"
+            <UniformGrid Grid.Row="1" Columns="4" ColumnSpacing="12" Margin="24,-84,24,0">
+                <Button Classes="tile" Command="{Binding OpenCommand}"
                         CommandParameter="{x:Type vm:ItemsViewModel}">
                     <StackPanel Spacing="12">
                         <Border Classes="icon" HorizontalAlignment="Left">
                             <PathIcon Data="{StaticResource NavigationIcon}" />
                         </Border>
                         <TextBlock Text="Navigation" Classes="heading" />
-                        <TextBlock Classes="caption"
+                        <TextBlock Classes="body"
                                    Text="Typed parameters, back and forward history, and pages from their own scope." />
                     </StackPanel>
                 </Button>
-                <Button Classes="tile" Margin="3,0" Command="{Binding OpenCommand}"
+                <Button Classes="tile" Command="{Binding OpenCommand}"
                         CommandParameter="{x:Type vm:EditorViewModel}">
                     <StackPanel Spacing="12">
                         <Border Classes="icon" HorizontalAlignment="Left">
                             <PathIcon Data="{StaticResource GuardIcon}" />
                         </Border>
                         <TextBlock Text="Guards" Classes="heading" />
-                        <TextBlock Classes="caption" Text="A page with unsaved changes asks before it can be left." />
+                        <TextBlock Classes="body" Text="A page with unsaved changes asks before it can be left." />
                     </StackPanel>
                 </Button>
-                <Button Classes="tile" Margin="3,0" Command="{Binding OpenCommand}"
+                <Button Classes="tile" Command="{Binding OpenCommand}"
                         CommandParameter="{x:Type vm:DialogsViewModel}">
                     <StackPanel Spacing="12">
                         <Border Classes="icon" HorizontalAlignment="Left">
                             <PathIcon Data="{StaticResource DialogIcon}" />
                         </Border>
                         <TextBlock Text="Dialogs" Classes="heading" />
-                        <TextBlock Classes="caption"
+                        <TextBlock Classes="body"
                                    Text="Await a result from a dialog, stack dialogs, and refuse being dismissed." />
                     </StackPanel>
                 </Button>
-                <Button Classes="tile" Margin="6,0,0,0" Command="{Binding OpenCommand}"
+                <Button Classes="tile" Command="{Binding OpenCommand}"
                         CommandParameter="{x:Type vm:ToastsViewModel}">
                     <StackPanel Spacing="12">
                         <Border Classes="icon" HorizontalAlignment="Left">
                             <PathIcon Data="{StaticResource ToastIcon}" />
                         </Border>
                         <TextBlock Text="Toasts" Classes="heading" />
-                        <TextBlock Classes="caption"
+                        <TextBlock Classes="body"
                                    Text="Short notifications with a severity, or your own view with an Undo button." />
                     </StackPanel>
                 </Button>

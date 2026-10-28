@@ -10,15 +10,15 @@
                              Description="Short notifications, here in the bottom right corner. The newest is nearest the edge, at most five are shown, and each closes by itself after six seconds." />
 
         <controls:ExampleCard Title="Severities"
-                              Description="The built-in toast shows a title and a message on a card tinted in the color of its severity. Wrap the window's content in a ToastHost once, outside the DialogHost so toasts show above dialogs."
+                              Description="A Toast has a title, a message and a severity; the gallery shows it with its own ViewFor&lt;Toast&gt;, tinted in the color of the severity. Wrap the window's content in a ToastHost once, outside the DialogHost so toasts show above dialogs."
                               CSharp="{x:Static snippets:CodeSnippets.Toasts}"
                               Xaml="{x:Static snippets:CodeSnippets.ToastHost}">
             <controls:ExampleCard.Example>
-                <WrapPanel>
-                    <Button Content="Information" Command="{Binding ShowInformationCommand}" Margin="0,0,8,0" />
-                    <Button Content="Success" Command="{Binding ShowSuccessCommand}" Margin="0,0,8,0" />
-                    <Button Content="Warning" Command="{Binding ShowWarningCommand}" Margin="0,0,8,0" />
-                    <Button Content="Error" Command="{Binding ShowErrorCommand}" Margin="0,0,8,0" />
+                <WrapPanel ItemSpacing="8" LineSpacing="8">
+                    <Button Content="Information" Command="{Binding ShowInformationCommand}" />
+                    <Button Content="Success" Command="{Binding ShowSuccessCommand}" />
+                    <Button Content="Warning" Command="{Binding ShowWarningCommand}" />
+                    <Button Content="Error" Command="{Binding ShowErrorCommand}" />
                     <Button Content="Until closed" Command="{Binding ShowStickyCommand}" />
                 </WrapPanel>
             </controls:ExampleCard.Example>

@@ -9,9 +9,9 @@
                              Description="{Binding Item.Id, StringFormat='Opened with NavigateToAsync&lt;DetailsViewModel, int&gt;({0})'}" />
 
         <Border Classes="card">
-            <StackPanel Spacing="4">
+            <StackPanel Spacing="8">
                 <TextBlock Text="About this item" Classes="heading" />
-                <TextBlock Text="{Binding Item.Description}" Classes="caption" />
+                <TextBlock Text="{Binding Item.Description}" Classes="body" />
             </StackPanel>
         </Border>
     </StackPanel>
