@@ -18,6 +18,16 @@ Fluently has no theme of its own. Its controls are built from Avalonia's standar
 theme you use, such as Avalonia's Fluent theme or [FluentAvalonia](https://github.com/amwx/FluentAvalonia); every value
 they set is a default your styles override.
 
+## Registration
+
+Register Fluently and the services that need Avalonia, such as `IThemeService`:
+
+```csharp
+services.AddFluently().AddFluentlyAvalonia();
+```
+
+Resolve these services after Avalonia has created the application, for example in `OnFrameworkInitializationCompleted`.
+
 ## Views
 
 Derive each view from `ViewFor<TViewModel>`, which keeps the view model in `ViewModel` and sets it as the
@@ -116,6 +126,12 @@ Wrap your content in a `ToastHost`, outside the `DialogHost` so toasts show abov
 - Toasts move like Windows notifications: they slide in from their side, or from their edge when centered, slide back
   out faster, and the others glide into place.
 - Toasts do not block the content: only the toasts themselves take clicks.
+
+## Theme
+
+`IThemeService` sets the application's `RequestedThemeVariant`, on the UI thread, and follows it when your code sets
+it directly. Its `ActualTheme` follows the application's `ActualThemeVariant`; a custom theme variant counts as the
+light or dark one it inherits from.
 
 ## Window and navigation pane
 

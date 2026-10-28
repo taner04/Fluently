@@ -23,12 +23,16 @@ internal sealed partial class ToastService(
     private bool _disposed;
     private ToastPosition _position = options.Position;
 
+    /// <inheritdoc />
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    /// <inheritdoc />
     public IReadOnlyList<IToast> Toasts { get; private set; } = [];
 
+    /// <inheritdoc />
     public ViewModelScopes Scopes { get; } = scopes;
 
+    /// <inheritdoc />
     public ToastPosition Position
     {
         get => _position;
@@ -44,12 +48,14 @@ internal sealed partial class ToastService(
         }
     }
 
+    /// <inheritdoc />
     public void Show(IToast toast, TimeSpan? duration = null)
     {
         ArgumentNullException.ThrowIfNull(toast);
         ShowCore(toast, Lifetime(duration), null);
     }
 
+    /// <inheritdoc />
     public IToast Show(Type toastType, TimeSpan? duration = null)
     {
         toastType.ThrowIfNotAssignableTo<IToast>();
@@ -72,12 +78,14 @@ internal sealed partial class ToastService(
         return toast;
     }
 
+    /// <inheritdoc />
     public bool Dismiss(IToast toast)
     {
         ArgumentNullException.ThrowIfNull(toast);
         return Remove(active => ReferenceEquals(active.Toast, toast));
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         List<ActiveToast> entries;

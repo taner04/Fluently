@@ -20,14 +20,19 @@ internal sealed partial class NavigationService : INavigationService, IViewSourc
         Scopes = serviceProvider.GetService<ViewModelScopes>() ?? new ViewModelScopes(serviceProvider);
     }
 
+    /// <inheritdoc />
     public event EventHandler<NavigatedEventArgs>? Navigated;
 
+    /// <inheritdoc />
     public INavigableViewModel? CurrentPage => _current?.Page;
 
+    /// <inheritdoc />
     public bool CanGoBack => _backStack.Count > 0;
 
+    /// <inheritdoc />
     public bool CanGoForward => _forwardStack.Count > 0;
 
+    /// <inheritdoc />
     public Task<bool> NavigateToAsync(
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
         Type viewModelType,
@@ -44,6 +49,7 @@ internal sealed partial class NavigationService : INavigationService, IViewSourc
         return NavigateCoreAsync(viewModelType, null, cancellationToken);
     }
 
+    /// <inheritdoc />
     public Task<bool> NavigateToAsync<TParameter>(
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
         Type viewModelType,
@@ -63,12 +69,15 @@ internal sealed partial class NavigationService : INavigationService, IViewSourc
         return NavigateCoreAsync(viewModelType, new NavigationParameter<TParameter>(parameter), cancellationToken);
     }
 
+    /// <inheritdoc />
     public Task<bool> GoBackAsync(CancellationToken cancellationToken = default) =>
         NavigateHistoryAsync(_backStack, _forwardStack, cancellationToken);
 
+    /// <inheritdoc />
     public Task<bool> GoForwardAsync(CancellationToken cancellationToken = default) =>
         NavigateHistoryAsync(_forwardStack, _backStack, cancellationToken);
 
+    /// <inheritdoc />
     public async Task ClearHistoryAsync(CancellationToken cancellationToken = default)
     {
         HistoryState before;
@@ -88,6 +97,7 @@ internal sealed partial class NavigationService : INavigationService, IViewSourc
         RaisePropertyChanges(before);
     }
 
+    /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
         if (_disposed)
@@ -102,6 +112,7 @@ internal sealed partial class NavigationService : INavigationService, IViewSourc
         }
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         if (_disposed)
@@ -116,5 +127,6 @@ internal sealed partial class NavigationService : INavigationService, IViewSourc
         }
     }
 
+    /// <inheritdoc />
     public ViewModelScopes Scopes { get; }
 }

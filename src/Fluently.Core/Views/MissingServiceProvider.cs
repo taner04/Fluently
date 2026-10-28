@@ -6,6 +6,7 @@ namespace Fluently;
 /// </summary>
 internal sealed class MissingServiceProvider(object viewModel) : IServiceProvider
 {
+    /// <inheritdoc />
     public object GetService(Type serviceType) =>
         throw new InvalidOperationException(
             $"The view of {viewModel.GetType().Name} needs {serviceType.Name}, but no service provider is " +

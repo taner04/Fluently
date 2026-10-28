@@ -3,7 +3,7 @@
     <PropertyGroup>
         <PackageId>Fluently.Avalonia</PackageId>
         <RootNamespace>Fluently</RootNamespace>
-        <Description>Avalonia integration for Fluently: a ViewLocator that shows the views registered by the Fluently.Core source generator, a NavigationHost that shows the current page, a DialogHost that shows open dialogs, a ToastHost that shows toasts, a ViewFor base class for views, and a FluentWindow with a TitleBar and a NavigationPane that navigates and follows the navigation service.</Description>
+        <Description>Avalonia integration for Fluently: a ViewLocator that shows the views registered by the Fluently.Core source generator, a NavigationHost that shows the current page, a DialogHost that shows open dialogs, a ToastHost that shows toasts, a ViewFor base class for views, a FluentWindow with a TitleBar and a NavigationPane that navigates and follows the navigation service, and an IThemeService that switches between light, dark and the system theme.</Description>
         <PackageTags>mvvm;navigation;avalonia</PackageTags>
         <PackageValidationBaselineVersion>0.3.0</PackageValidationBaselineVersion>
     </PropertyGroup>

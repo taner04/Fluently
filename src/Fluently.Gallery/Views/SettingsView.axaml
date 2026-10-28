@@ -12,7 +12,7 @@
             <controls:SettingCard Icon="{StaticResource ThemeIcon}" Header="App theme"
                                   Description="Select which app theme to display.">
                 <controls:SettingCard.Action>
-                    <ComboBox MinWidth="160" ItemsSource="{Binding Themes}" SelectedItem="{Binding Theme}" />
+                    <ComboBox MinWidth="160" ItemsSource="{Binding Themes}" SelectedItem="{Binding Theme.Theme}" />
                 </controls:SettingCard.Action>
             </controls:SettingCard>
         </StackPanel>

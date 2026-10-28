@@ -18,6 +18,7 @@ internal sealed partial class DialogService(
     private readonly ILogger _logger = logger;
     private bool _disposed;
 
+    /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
         foreach (var entry in CloseAllEntries())
@@ -27,12 +28,16 @@ internal sealed partial class DialogService(
         }
     }
 
+    /// <inheritdoc />
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    /// <inheritdoc />
     public IReadOnlyList<IDialog> Dialogs { get; private set; } = [];
 
+    /// <inheritdoc />
     public IDialog? CurrentDialog => Dialogs.Count > 0 ? Dialogs[^1] : null;
 
+    /// <inheritdoc />
     public Task<DialogResult<TResult>> ShowAsync<TResult>(
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
         Type dialogType,
@@ -49,6 +54,7 @@ internal sealed partial class DialogService(
         return ShowCoreAsync<TResult>(dialogType, null, cancellationToken);
     }
 
+    /// <inheritdoc />
     public Task<DialogResult<TResult>> ShowAsync<TResult, TParameter>(
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
         Type dialogType,
@@ -68,6 +74,7 @@ internal sealed partial class DialogService(
         return ShowCoreAsync<TResult>(dialogType, new NavigationParameter<TParameter>(parameter), cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task<bool> CloseAsync<TResult>(IDialog<TResult> dialog, TResult result)
     {
         ArgumentNullException.ThrowIfNull(dialog);
@@ -82,6 +89,7 @@ internal sealed partial class DialogService(
         return true;
     }
 
+    /// <inheritdoc />
     public async Task<bool> DismissAsync(IDialog dialog)
     {
         ArgumentNullException.ThrowIfNull(dialog);
@@ -95,6 +103,7 @@ internal sealed partial class DialogService(
         return true;
     }
 
+    /// <inheritdoc />
     public async Task<bool> RequestDismissAsync(IDialog dialog, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(dialog);
@@ -137,6 +146,7 @@ internal sealed partial class DialogService(
         }
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         foreach (var entry in CloseAllEntries())
@@ -146,6 +156,7 @@ internal sealed partial class DialogService(
         }
     }
 
+    /// <inheritdoc />
     public ViewModelScopes Scopes { get; } = scopes;
 
     private async Task<DialogResult<TResult>> ShowCoreAsync<TResult>(

@@ -51,6 +51,7 @@ _Screenshots of the [gallery](src/Fluently.Gallery), styled with FluentAvalonia.
 - `FluentWindow` extends your content into the title bar, with Mica on Windows 11
 - `TitleBar` with a back button, your icon and the window title, and back and forward on the mouse's side buttons
 - `NavigationPane` with items, footer items, a collapsible pane, search with Ctrl+L, and selection that follows navigation
+- `IThemeService` switches your theme between light, dark and the system theme, bindable and from any thread
 - No theme of its own: everything takes the look of your theme, such as FluentAvalonia's
 
 **Tooling**
@@ -122,6 +123,7 @@ public override async void OnFrameworkInitializationCompleted()
         var services = new ServiceCollection()
             .AddLogging()
             .AddFluently()
+            .AddFluentlyAvalonia()
             .AddViewModels()
             .AddSingleton<MainWindowViewModel>()
             .BuildServiceProvider();

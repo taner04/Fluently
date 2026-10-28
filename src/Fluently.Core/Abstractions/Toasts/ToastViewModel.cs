@@ -23,6 +23,7 @@ public abstract class ToastViewModel : IToast, IHostedToast
 {
     private IToastService? _toasts;
 
+    /// <inheritdoc />
     IToastService? IHostedToast.Toasts
     {
         set => _toasts = value;

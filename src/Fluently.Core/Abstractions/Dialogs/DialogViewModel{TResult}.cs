@@ -24,6 +24,7 @@ public abstract class DialogViewModel<TResult> : IDialog<TResult>, IHostedDialog
 {
     private IDialogService? _dialogs;
 
+    /// <inheritdoc />
     IDialogService? IHostedDialog.Dialogs
     {
         set => _dialogs = value;

@@ -8,6 +8,7 @@ internal sealed partial class NavigationService
     private static readonly PropertyChangedEventArgs CanGoBackChanged = new(nameof(CanGoBack));
     private static readonly PropertyChangedEventArgs CanGoForwardChanged = new(nameof(CanGoForward));
 
+    /// <inheritdoc />
     public event PropertyChangedEventHandler? PropertyChanged;
 
     // Taken while the transition lock is held, so it describes the state the change started from.

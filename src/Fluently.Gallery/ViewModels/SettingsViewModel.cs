@@ -1,27 +1,15 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using Fluently.Gallery.Services;
 using System.Reflection;
 
 namespace Fluently.Gallery.ViewModels;
 
 [TransientPage]
-public sealed partial class SettingsViewModel : ObservableObject, INavigableViewModel
+public sealed class SettingsViewModel(IThemeService theme) : INavigableViewModel
 {
-    private readonly ThemeService _themes;
+    public IThemeService Theme { get; } = theme;
 
-    public SettingsViewModel(ThemeService themes)
-    {
-        _themes = themes;
-        Theme = themes.Theme;
-    }
-
-    public IReadOnlyList<string> Themes => _themes.Themes;
+    public IReadOnlyList<ApplicationTheme> Themes { get; } = Enum.GetValues<ApplicationTheme>();
 
     public string Version { get; } =
         typeof(INavigationService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
             ?.InformationalVersion.Split('+')[0] ?? "unknown";
-
-    [ObservableProperty] public partial string Theme { get; set; }
-
-    partial void OnThemeChanged(string value) => _themes.Theme = value;
 }

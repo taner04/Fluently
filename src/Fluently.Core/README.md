@@ -32,6 +32,7 @@ Requires .NET 8 or later; the package targets `net8.0` and `net10.0`.
 - **Dialogs**: `IDialogService` shows `IDialog<TResult>` view models and returns their result; dialogs stack, get their
   own scope, and can refuse being dismissed
 - **Toasts**: `IToastService` shows short notifications that close by themselves, built-in or with a view of your own
+- **Theme switching**: `IThemeService` switches between light, dark and the system theme, bindable and from any thread
 - **Generated registration**: views and view models are registered by a source generator, without reflection
 
 ## Registration
@@ -234,6 +235,30 @@ closes itself with `toasts.Dismiss(this)`.
 - `Show<TToast>()` creates a toast from its own service scope, which is disposed when the toast closes.
 - Toasts can be shown from any thread. They are timed with the container's `TimeProvider`, so tests can use a fake
   time.
+
+## Theme
+
+`IThemeService` switches the app between the light and the dark theme, or lets it follow the operating system. Its
+implementation comes from the UI framework package, such as `AddFluentlyAvalonia()` in `Fluently.Avalonia`:
+
+```csharp
+public sealed class SettingsViewModel(IThemeService theme)
+{
+    public IThemeService Theme { get; } = theme;
+
+    public IReadOnlyList<ApplicationTheme> Themes { get; } = Enum.GetValues<ApplicationTheme>();
+}
+```
+
+```xml
+<ComboBox ItemsSource="{Binding Themes}" SelectedItem="{Binding Theme.Theme}" />
+```
+
+- `Theme` is `System`, `Light` or `Dark`, and starts at the theme the app sets at startup. Set it from any thread.
+- `ActualTheme` is the theme the app is shown in, `Light` or `Dark`; it follows the operating system while `Theme` is
+  `System`.
+- Both raise `PropertyChanged`. The service only switches: the colors come from your theme, and saving the choice
+  between runs is up to your app.
 
 ## Views
 

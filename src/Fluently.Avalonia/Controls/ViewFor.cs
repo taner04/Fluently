@@ -29,8 +29,6 @@ public abstract class ViewFor<TViewModel> : UserControl, IViewFor<TViewModel>
         DataContext = viewModel;
     }
 
-    /// <summary>
-    ///     The view model this view shows.
-    /// </summary>
+    /// <inheritdoc />
     public TViewModel ViewModel { get; }
 }

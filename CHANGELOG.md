@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- `IThemeService` switches the app between the light and the dark theme, or lets it follow the operating system. `Theme` can be set from any thread, `ActualTheme` is the theme the app is shown in, and both raise `PropertyChanged`
+- `AddFluentlyAvalonia()` registers the services of Fluently that need Avalonia, such as `IThemeService`, which sets the application's `RequestedThemeVariant` and follows it when it is set directly
+
+### Changed
+
+- The gallery's settings page switches the theme with `IThemeService`
+
 ## [0.3.0] - 2026-10-19
 
 ### Breaking changes

@@ -26,9 +26,9 @@ public class App : Application
                     options.Toasts.Position = ToastPosition.BottomRight;
                     options.Toasts.Duration = TimeSpan.FromSeconds(6);
                 })
+                .AddFluentlyAvalonia()
                 .AddViewModels()
                 .AddSingleton<ItemCatalog>()
-                .AddSingleton<ThemeService>()
                 .AddSingleton<MainWindowViewModel>()
                 .BuildServiceProvider();
 
